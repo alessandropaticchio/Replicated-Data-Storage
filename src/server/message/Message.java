@@ -8,6 +8,11 @@ public class Message implements Serializable {
     private String type;
     private long clock;
 
+    public Message(String sender, String type) {
+        this.sender = sender;
+        this.type = type;
+    }
+
     public Message(String sender, String type, long clock) {
         this.sender = sender;
         this.type = type;
@@ -26,4 +31,7 @@ public class Message implements Serializable {
         return clock;
     }
 
+    public void setClock(long clock) {
+        this.clock = clock;
+    }
 }

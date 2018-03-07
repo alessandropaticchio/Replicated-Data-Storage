@@ -1,81 +1,22 @@
 package server;
 
-import server.message.Ack;
-import server.message.Message;
-import server.message.Write;
+import server.multicast.MulticastHandler;
 
-import java.io.*;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
-public class Server implements Runnable{
+public class Server {
 
-    //Address
-    private InetAddress group;
-    private final int port;
+    private final MulticastHandler multicast;
+    private final String groupAddr = "222.222.222.222";
+    private final int port = 9504;
 
-    //Socket
-    MulticastSocket s;
-    private final int bufferSize = 1024 * 4; //Maximum size of transfer object
-
-
-    public Server(String groupAddress, int port) throws UnknownHostException {
-        this.group = InetAddress.getByName(groupAddress);
-        this.port = port;
+    public Server() throws UnknownHostException {
+        this.multicast = new MulticastHandler(groupAddr, port);
     }
 
-    public void connect() {
-        try {
-            //create socket
-            s = new MulticastSocket(this.port);
-            s.joinGroup(this.group);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void start() {
+        // Run multicast handler
+        new Thread(multicast).start();
     }
 
-    public synchronized void send(Message msg) throws IOException {
-        //Prepare Data
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(msg);
-        byte[] data = baos.toByteArray();
-
-        //Send data
-        s.send(new DatagramPacket(data, data.length, group, port));
-    }
-
-    @Override
-    public void run() {
-
-        this.connect();
-
-        //Receive data
-        while (true) {
-
-            //Create buffer
-            byte[] buffer = new byte[bufferSize];
-            try {
-                s.receive(new DatagramPacket(buffer, bufferSize, group, port));
-                //Deserialze object
-                ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-                ObjectInputStream ois = null;
-                ois = new ObjectInputStream(bais);
-                Object readObject = ois.readObject();
-                //Action associated to the message type
-                if (readObject instanceof Write) {
-                    Write message = (Write) readObject;
-                } else if(readObject instanceof Ack) {
-                    Ack message = (Ack) readObject;
-                } else {
-                    System.out.println("The received object is not of type String!");
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
 }
