@@ -28,7 +28,6 @@ public class ThreadedEchoServer {
             }
             // new thread for a client
             new ClientConnection(socket).start();
-            System.out.println("runnato il thread");
         }
     }
 }

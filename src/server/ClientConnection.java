@@ -19,13 +19,7 @@ public class ClientConnection extends Thread{
     public void run()
     {
         try{
-            //1. creating a server socket
-            //providerSocket = new ServerSocket(2004, 10);
-            //2. Wait for connection
-            //System.out.println("Waiting for connection");
-            //connection = providerSocket.accept();
-            //System.out.println("Connection received from " + connection.getInetAddress().getHostName());
-            //3. get Input and Output streams
+
             out = new ObjectOutputStream(connection.getOutputStream());
             out.flush();
             in = new ObjectInputStream(connection.getInputStream());
