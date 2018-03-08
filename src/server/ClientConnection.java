@@ -6,22 +6,25 @@ import client.WriteMessage;
 
 import java.io.*;
 import java.net.*;
-public class ClientConnection {
-    ServerSocket providerSocket;
+public class ClientConnection extends Thread{
     Socket connection = null;
     ObjectOutputStream out;
     ObjectInputStream in;
     ClientMessage message;
-    ClientConnection(){}
-    void run()
+
+    public ClientConnection(Socket connection) {
+        this.connection = connection;
+    }
+
+    public void run()
     {
         try{
             //1. creating a server socket
-            providerSocket = new ServerSocket(2004, 10);
+            //providerSocket = new ServerSocket(2004, 10);
             //2. Wait for connection
-            System.out.println("Waiting for connection");
-            connection = providerSocket.accept();
-            System.out.println("Connection received from " + connection.getInetAddress().getHostName());
+            //System.out.println("Waiting for connection");
+            //connection = providerSocket.accept();
+            //System.out.println("Connection received from " + connection.getInetAddress().getHostName());
             //3. get Input and Output streams
             out = new ObjectOutputStream(connection.getOutputStream());
             out.flush();
@@ -53,7 +56,7 @@ public class ClientConnection {
             try{
                 in.close();
                 out.close();
-                providerSocket.close();
+                connection.close();
             }
             catch(IOException ioException){
                 ioException.printStackTrace();
@@ -71,11 +74,5 @@ public class ClientConnection {
             ioException.printStackTrace();
         }
     }
-    public static void main(String args[])
-    {
-        ClientConnection server = new ClientConnection();
-        while(true){
-            server.run();
-        }
-    }
+
 }
