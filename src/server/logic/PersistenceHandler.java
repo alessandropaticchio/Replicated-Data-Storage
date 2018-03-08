@@ -6,22 +6,51 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.net.URL;
 
 public class PersistenceHandler {
     private JSONParser parser = new JSONParser();
 
-    public void persist(int id, int value) throws IOException, ParseException {
-        JSONObject newData = new JSONObject();
-        newData.put("ID", id);
-        newData.put("VALUE", value);
-        FileWriter dataStorage = new FileWriter("C:\\Users\\aless\\Desktop\\replicated-data-storage\\src\\server\\logic\\datastorage.txt");
-        dataStorage.write(newData.toJSONString());
-        dataStorage.flush();
-        System.out.println("The object ID: " + id + ", VALUE: " + value + " is now persistent.");
+    public void persist(Record record) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject dataStorage = (JSONObject) parser.parse(new FileReader("C:\\Users\\aless\\Desktop\\replicated-data-storage\\src\\server\\logic\\datastorage.txt"));;
+        JSONArray dataArray = (JSONArray) dataStorage.get("Data");
+        boolean alreadyPresent = false;
+        for (Object o : dataArray) {
+            JSONObject jsonLineItem = (JSONObject) o;
+            if (record.getID() == Integer.parseInt(jsonLineItem.get("ID").toString()))
+            {
+                jsonLineItem.put("VALUE", record.getValue());
+                alreadyPresent = true;
+                File newDataFile = new File("C:\\Users\\aless\\Desktop\\replicated-data-storage\\src\\server\\logic\\datastorage.txt");
+                newDataFile.createNewFile();
+                FileWriter filewriter = new FileWriter(newDataFile);
+                filewriter.write(dataStorage.toJSONString());
+                filewriter.flush();
+                filewriter.close();
+                System.out.println("The record with value ID: " + record.getID() + " was already present in our data storage. It has been overwritten with VALUE: " + record.getValue() );
+            }
+        }
+        if (!alreadyPresent) {
+            JSONObject newData = new JSONObject();
+            newData.put("ID", record.getID());
+            newData.put("VALUE", record.getValue());
+            dataArray.add(newData);
+            dataStorage.put("Data", dataArray);
+            File newDataFile = new File("C:\\Users\\aless\\Desktop\\replicated-data-storage\\src\\server\\logic\\datastorage.txt");
+            newDataFile.createNewFile();
+            FileWriter filewriter = new FileWriter(newDataFile);
+            filewriter.write(dataStorage.toJSONString());
+            filewriter.flush();
+            filewriter.close();
+            System.out.println("The record ID: " + record.getID() + ", VALUE: " + record.getValue() + " is now persistent.");
+        }
     }
 
     public static void main(String[] args) throws IOException, ParseException {
         PersistenceHandler ph = new PersistenceHandler();
-        ph.persist(2,3);
+        ph.persist(new Record(2,3));
+        ph.persist(new Record(7,3));
+
     }
 }
