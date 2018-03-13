@@ -24,7 +24,7 @@ public class ClientMain {
             System.err.println("Welcome, insert the IP address of the desired server:");
             String ip = scanner.next();
             requestSocket = new Socket(ip, 2004);
-            System.out.println("Connected to localhost in port 2004");
+            System.out.println("Connected to server: "+ ip + " in port 2004");
             //get Input and Output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             out.flush();
@@ -42,17 +42,17 @@ public class ClientMain {
                     case  "1":
                         System.err.println("Insert the file ID: ");
                         String toSearchID = scanner.next();
-                        read(toSearchID);
+                        read(Integer.parseInt(toSearchID));
                         break;
                     case "2" :
                         System.err.println("Insert the file ID: ");
                         String dataId = scanner.next();
                         System.err.println("Insert the new value: ");
-                        int newValue = Integer.parseInt(scanner.next());
-                        write(dataId, newValue);
+                        String  newValue = scanner.next();
+                        write(Integer.parseInt(dataId), Integer.parseInt(newValue));
                         break;
                     default:
-                        ClientMessage msg = new ClientMessage("bye");
+                        ClientMessage msg = new ClientMessage(-1);
                         out.writeObject(msg);
                         System.out.println("You are disconnected");
                         message = "bye";
@@ -80,12 +80,12 @@ public class ClientMain {
     }
 
 
-    void write(String dataId, int newValue){
+    void write(int dataId, int newValue){
         WriteMessage msg = new WriteMessage(dataId, newValue);
         send(msg);
     }
 
-    void read(String dataId){
+    void read(int dataId){
         ReadMessage msg = new ReadMessage(dataId);
         send(msg);
     }

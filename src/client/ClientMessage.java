@@ -3,17 +3,17 @@ package client;
 import java.io.Serializable;
 
 public class ClientMessage implements Serializable {
-    String dataID;
+    int dataID;
 
-    public ClientMessage(String dataID) {
+    public ClientMessage(int dataID) {
         this.dataID = dataID;
     }
 
-    public String getDataID() {
+    public int getDataID() {
         return dataID;
     }
 
-    public void setDataID(String dataID) {
+    public void setDataID(int dataID) {
         this.dataID = dataID;
     }
 }
