@@ -97,8 +97,11 @@ public class MulticastHandler implements Runnable{
                 } else if(readObject instanceof Ack) {
                     Ack message = (Ack) readObject;
                     this.queue.addAck(message, (HashMap<String,GroupMember>)this.members.clone());
-                    //if(this.queue.available())
-                        //TODO pass the slot to the app
+                    if(this.queue.available()) {
+                        QueueSlot slot = this.queue.draw();
+                        Write msg = (Write)slot.getMessage();
+                        this.server.getLogic().fromQueue(msg.getFile(), msg.getData(), msg.getSocket());
+                    }
                 } else if(readObject instanceof Join) {
                     Join message = (Join) readObject;
                     GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());
