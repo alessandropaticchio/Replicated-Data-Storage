@@ -1,5 +1,6 @@
 package server.multicast;
 
+import org.json.simple.parser.ParseException;
 import server.GetIP;
 import server.Server;
 import server.message.*;
@@ -115,7 +116,7 @@ public class MulticastHandler implements Runnable{
                 } else {
                     System.out.println("The received object is not of type String!");
                 }
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException | ParseException e) {
                 e.printStackTrace();
             }
         }

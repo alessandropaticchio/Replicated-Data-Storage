@@ -49,10 +49,4 @@ public class PersistenceHandler {
         }
     }
 
-    public static void main(String[] args) throws IOException, ParseException {
-        PersistenceHandler ph = new PersistenceHandler();
-        ph.persist(new Record(2,3));
-        ph.persist(new Record(7,3));
-
-    }
 }
