@@ -5,12 +5,10 @@ import server.multicast.Queue.InputQueue;
 import server.multicast.Queue.QueueSlot;
 
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
+
 
 public class MulticastHandler implements Runnable{
 
@@ -37,11 +35,27 @@ public class MulticastHandler implements Runnable{
         this.queue = new InputQueue();
     }
 
+    private InetAddress getIP() throws SocketException {
+        Enumeration e = NetworkInterface.getNetworkInterfaces();
+        while(e.hasMoreElements())
+        {
+            NetworkInterface n = (NetworkInterface) e.nextElement();
+            Enumeration ee = n.getInetAddresses();
+            while (ee.hasMoreElements())
+            {
+                InetAddress i = (InetAddress) ee.nextElement();
+                if(i.getHostAddress().contains("192.168.1"))
+                    return i;
+            }
+        }
+        return null;
+    }
+
     public void connect() {
         try {
             //create socket
             s = new MulticastSocket(this.port);
-            s.setInterface(InetAddress.getLocalHost());
+            s.setInterface(this.getIP());
             s.joinGroup(this.group);
             this.send(new Join(this.ID));
         } catch (IOException e) {
