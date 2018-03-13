@@ -64,7 +64,7 @@ public class ClientMain {
         catch(UnknownHostException unknownHost){
             System.err.println("You are trying to connect to an unknown host!");
         } catch(IOException ioException) {
-            System.out.println("Server disconnected");
+            System.out.println("NO Server");
             this.run();
         } finally{
             //4: Closing connection
