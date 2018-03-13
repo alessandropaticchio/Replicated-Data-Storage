@@ -1,5 +1,7 @@
 package server.multicast;
 
+import server.GetIP;
+import server.Server;
 import server.message.*;
 import server.multicast.Queue.InputQueue;
 import server.multicast.Queue.QueueSlot;
@@ -26,36 +28,24 @@ public class MulticastHandler implements Runnable{
     HashMap<String, GroupMember> members;
     InputQueue queue;
 
-    public MulticastHandler(String groupAddress, int port, int ID) throws UnknownHostException {
+    Server server;
+
+    public MulticastHandler(String groupAddress, int port, int ID, Server server) throws UnknownHostException {
         this.group = InetAddress.getByName(groupAddress);
         this.port = port;
         this.clock = 0;
         this.ID = ID;
         this.members = new HashMap<>();
         this.queue = new InputQueue();
+        this.server = server;
     }
 
-    private InetAddress getIP() throws SocketException {
-        Enumeration e = NetworkInterface.getNetworkInterfaces();
-        while(e.hasMoreElements())
-        {
-            NetworkInterface n = (NetworkInterface) e.nextElement();
-            Enumeration ee = n.getInetAddresses();
-            while (ee.hasMoreElements())
-            {
-                InetAddress i = (InetAddress) ee.nextElement();
-                if(i.getHostAddress().contains("192.168.1"))
-                    return i;
-            }
-        }
-        return null;
-    }
 
     public void connect() {
         try {
             //create socket
             s = new MulticastSocket(this.port);
-            s.setInterface(this.getIP());
+            s.setInterface(GetIP.getIP());
             s.joinGroup(this.group);
             this.send(new Join(this.ID));
         } catch (IOException e) {
@@ -107,8 +97,11 @@ public class MulticastHandler implements Runnable{
                 } else if(readObject instanceof Ack) {
                     Ack message = (Ack) readObject;
                     this.queue.addAck(message, (HashMap<String,GroupMember>)this.members.clone());
-                    //if(this.queue.available())
-                        //TODO pass the slot to the app
+                    if(this.queue.available()) {
+                        QueueSlot slot = this.queue.draw();
+                        Write msg = (Write)slot.getMessage();
+                        this.server.getLogic().fromQueue(msg.getFile(), msg.getData(), msg.getSocket());
+                    }
                 } else if(readObject instanceof Join) {
                     Join message = (Join) readObject;
                     GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());

@@ -5,12 +5,12 @@ import server.logic.LogicHandler;
 import java.io.IOException;
 import java.net.*;
 
-public class ThreadedEchoServer {
+public class ThreadedClientServer {
 
     private static int PORT;
     private static LogicHandler lh;
 
-    public ThreadedEchoServer(int PORT, LogicHandler lh) {
+    public ThreadedClientServer(int PORT, LogicHandler lh) {
         this.PORT = PORT;
         this.lh = lh;
     }
