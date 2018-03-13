@@ -1,16 +1,29 @@
 package server.message;
 
+import java.net.InetAddress;
+
 public class Ack  extends Message{
 
-        private String origin; //the ip address of the sender of the message I want to acknowledge
+    private InetAddress originAddr;
+    private int originPort;
+    private int originID;
 
-    public Ack(String sender, String type, String origin, long clock) {
-        super(sender, "ack", clock);
-        this.origin = origin;
+    public Ack(int senderID, long clock, InetAddress originAddr, int originPort, int originID) {
+        super(senderID, clock);
+        this.originAddr = originAddr;
+        this.originPort = originPort;
+        this.originID = originID;
     }
 
-    public String getOrigin() {
-        return origin;
+    public InetAddress getOriginAddr() {
+        return originAddr;
     }
 
+    public int getOriginPort() {
+        return originPort;
+    }
+
+    public int getOriginID() {
+        return originID;
+    }
 }
