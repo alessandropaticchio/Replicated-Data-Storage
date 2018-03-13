@@ -4,28 +4,22 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
 
-    private String sender;
-    private String type;
+    private int senderID;
     private long clock;
 
-    public Message(String sender, String type) {
-        this.sender = sender;
-        this.type = type;
+    public Message(int senderID) {
+        this.senderID = senderID;
     }
 
-    public Message(String sender, String type, long clock) {
-        this.sender = sender;
-        this.type = type;
+    public Message(int senderID, long clock) {
+        this.senderID = senderID;
         this.clock = clock;
     }
 
-    public String getSender() {
-        return sender;
+    public int getSenderID() {
+        return senderID;
     }
 
-    public String getType() {
-        return type;
-    }
 
     public long getClock() {
         return clock;

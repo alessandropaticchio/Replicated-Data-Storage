@@ -2,16 +2,16 @@ package server.message;
 
 public class Write extends Message {
 
-    String file;
+    int file;
     int data;
 
-    public Write(String sender, String type, String file, int data) {
-        super(sender, "write");
+    public Write(int sender, String type, int file, int data) {
+        super(sender);
         this.file = file;
         this.data = data;
     }
 
-    public String getFile() {
+    public int getFile() {
         return file;
     }
 
