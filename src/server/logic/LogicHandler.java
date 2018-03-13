@@ -4,20 +4,22 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import server.Server;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
 public class LogicHandler {
     private HashMap<Integer,Integer> volatileDataStorage;
-    private PersistenceHandler ph;
+    private final PersistenceHandler ph;
     private String fileName = "src\\server\\logic\\datastorage.txt" ;
+    private final Server server;
 
-    public LogicHandler() {
+    public LogicHandler(Server server) {
         this.volatileDataStorage = new HashMap<Integer, Integer>();
         this.ph = new PersistenceHandler();
+        this.server = server;
     }
 
     public void fetchData() throws IOException, ParseException {
@@ -51,14 +53,4 @@ public class LogicHandler {
         this.ph.persist(new Record(id,value));
     }
 
-    public static void main(String[] args) throws IOException, ParseException {
-        LogicHandler lh = new LogicHandler();
-        lh.fetchData();
-        System.out.println(lh.volatileDataStorage.toString());
-        lh.readPrimitive(2);
-        lh.readPrimitive(5);
-        lh.readPrimitive(66);
-        lh.writePrimitive(2,6);
-        System.out.println(lh.volatileDataStorage.toString());
-    }
 }
