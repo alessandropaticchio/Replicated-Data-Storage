@@ -1,15 +1,16 @@
 package server.multicast;
 
-import server.message.Ack;
-import server.message.Join;
-import server.message.Message;
-import server.message.Write;
+import server.message.*;
+import server.multicast.Queue.InputQueue;
+import server.multicast.Queue.QueueSlot;
 
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class MulticastHandler implements Runnable{
 
@@ -17,24 +18,32 @@ public class MulticastHandler implements Runnable{
     private InetAddress group;
     private final int port;
     private long clock;
+    private int ID;
 
     //Socket
     MulticastSocket s;
     private final int bufferSize = 1024 * 4; //Maximum size of transfer object
 
+    //Queue
+    HashMap<String, GroupMember> members;
+    InputQueue queue;
 
-    public MulticastHandler(String groupAddress, int port) throws UnknownHostException {
+    public MulticastHandler(String groupAddress, int port, int ID) throws UnknownHostException {
         this.group = InetAddress.getByName(groupAddress);
         this.port = port;
         this.clock = 0;
+        this.ID = ID;
+        this.members = new HashMap<>();
+        this.queue = new InputQueue();
     }
 
     public void connect() {
         try {
             //create socket
             s = new MulticastSocket(this.port);
+            s.setInterface(InetAddress.getLocalHost());
             s.joinGroup(this.group);
-            this.send(new Join(s.getInetAddress().toString() + ' ' + s.getPort()));
+            this.send(new Join(this.ID));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,7 +51,7 @@ public class MulticastHandler implements Runnable{
 
     public synchronized void send(Message msg) throws IOException {
         // Increase clock
-        if(msg instanceof Write) {
+        if(!(msg instanceof Ack || msg instanceof Nack)) {
             this.clock += 1;
             msg.setClock(this.clock);
         }
@@ -67,8 +76,9 @@ public class MulticastHandler implements Runnable{
 
             //Create buffer
             byte[] buffer = new byte[bufferSize];
+            DatagramPacket datagram = new DatagramPacket(buffer, bufferSize);
             try {
-                s.receive(new DatagramPacket(buffer, bufferSize, group, port));
+                s.receive(datagram);
                 //Deserialze object
                 ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
                 ObjectInputStream ois = null;
@@ -77,8 +87,24 @@ public class MulticastHandler implements Runnable{
                 //Action associated to the message type
                 if (readObject instanceof Write) {
                     Write message = (Write) readObject;
+                    this.clock = Long.max(this.clock, message.getClock()) + 1;
+                    this.queue.add(new QueueSlot(message, datagram.getAddress(), datagram.getPort()));
+                    this.send(new Ack(this.ID, message.getClock(), datagram.getAddress(), datagram.getPort(), message.getSenderID()));
                 } else if(readObject instanceof Ack) {
                     Ack message = (Ack) readObject;
+                    this.queue.addAck(message, (HashMap<String,GroupMember>)this.members.clone());
+                    //if(this.queue.available())
+                        //TODO pass the slot to the app
+                } else if(readObject instanceof Join) {
+                    Join message = (Join) readObject;
+                    GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());
+                    this.members.put(member.toString(), member);
+                    this.send(new AckJoin(this.ID));
+                } else if(readObject instanceof AckJoin) {
+                    AckJoin message = (AckJoin) readObject;
+                    GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());
+                    this.members.put(member.toString(), member);
+                    System.out.println(this.members);
                 } else {
                     System.out.println("The received object is not of type String!");
                 }
