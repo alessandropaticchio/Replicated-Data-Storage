@@ -19,23 +19,24 @@ public class ClientMain {
 
     void run() throws ClassNotFoundException {
         try{
-            //1. creating a socket to connect to the server
-            System.out.println("Welcome");
-            requestSocket = new Socket("localhost", 2004);
+            Scanner scanner = new Scanner(System.in);
+            //creating a socket to connect to the server
+            System.err.println("Welcome, insert the IP address of the desired server:");
+            String ip = scanner.next();
+            requestSocket = new Socket(ip, 2004);
             System.out.println("Connected to localhost in port 2004");
-            //2. get Input and Output streams
+            //get Input and Output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             out.flush();
             in = new ObjectInputStream(requestSocket.getInputStream());
 
-            //3: Communicating with the server
+            //Communicating with the server
             do{
 
                 message = (String)in.readObject();
                 System.out.println("Server: " + message);
                 System.out.println("1:READ, 2:WRITE, Others inputs:DISCONNECT");
 
-                Scanner scanner = new Scanner(System.in);
                 String choice = scanner.next();
                 switch (choice) {
                     case  "1":
@@ -62,11 +63,10 @@ public class ClientMain {
         }
         catch(UnknownHostException unknownHost){
             System.err.println("You are trying to connect to an unknown host!");
-        }
-        catch(IOException ioException){
-            ioException.printStackTrace();
-        }
-        finally{
+        } catch(IOException ioException) {
+            System.out.println("Server disconnected");
+            this.run();
+        } finally{
             //4: Closing connection
             try{
                 in.close();
@@ -95,6 +95,8 @@ public class ClientMain {
             out.writeObject(msg);
             out.flush();
             System.out.println("message sent");
+        }
+        catch(SocketException e){
         }
         catch(IOException ioException){
             ioException.printStackTrace();

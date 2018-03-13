@@ -13,6 +13,7 @@ import java.util.HashMap;
 public class LogicHandler {
     private HashMap<Integer,Integer> volatileDataStorage;
     private PersistenceHandler ph;
+    private String fileName = "src\\server\\logic\\datastorage.txt" ;
 
     public LogicHandler() {
         this.volatileDataStorage = new HashMap<Integer, Integer>();
@@ -21,7 +22,7 @@ public class LogicHandler {
 
     public void fetchData() throws IOException, ParseException {
         JSONParser parser = new JSONParser();
-        JSONObject dataStorage = (JSONObject) parser.parse(new FileReader("C:\\Users\\aless\\Desktop\\replicated-data-storage\\src\\server\\logic\\datastorage.txt"));;
+        JSONObject dataStorage = (JSONObject) parser.parse(new FileReader(fileName));
         JSONArray dataArray = (JSONArray) dataStorage.get("Data");
         for (Object o : dataArray) {
             JSONObject jsonLineItem = (JSONObject) o;
@@ -31,14 +32,16 @@ public class LogicHandler {
         }
     }
 
-    public void readPrimitive(int id){
+    public Record readPrimitive(int id){
         if (this.volatileDataStorage.containsKey(id)){
             Record toSend = new Record(id, volatileDataStorage.get(id));
             System.out.println("The record with ID: " + id + " has been found." +
                     "It has value: " + volatileDataStorage.get(id) + " and it is now sent to the client");
+            return toSend;
         }
         else{
             System.out.println("The record with ID: " + id + " does not exist");
+            return new Record(-1,-1); //invalid
         }
 
     }

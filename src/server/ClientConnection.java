@@ -3,6 +3,10 @@ package server;
 import client.ClientMessage;
 import client.ReadMessage;
 import client.WriteMessage;
+import com.oracle.tools.packager.Log;
+import org.json.simple.parser.ParseException;
+import server.logic.LogicHandler;
+import server.logic.Record;
 
 import java.io.*;
 import java.net.*;
@@ -10,10 +14,12 @@ public class ClientConnection extends Thread{
     Socket connection = null;
     ObjectOutputStream out;
     ObjectInputStream in;
-    ClientMessage message;
+    ClientMessage message = new ClientMessage("0");
+    private LogicHandler lh;
 
-    public ClientConnection(Socket connection) {
+    public ClientConnection(Socket connection, LogicHandler lh) {
         this.connection = connection;
+        this.lh = lh;
     }
 
     public void run()
@@ -32,16 +38,29 @@ public class ClientConnection extends Thread{
                     System.out.println("message received for file: " + message.getDataID());
                     if (message.getDataID().equals("bye"))
                         sendMessage("bye");
-                    else if (message instanceof WriteMessage)
+                    else if (message instanceof WriteMessage) {
+                        lh.writePrimitive(Integer.parseInt(message.getDataID()), ((WriteMessage) message).getValue());
                         sendMessage("file wrote");
-                    else if (message instanceof ReadMessage)
-                        sendMessage("file " + message.getDataID() + " has data: xxx"); //xxx: answer with hashmap value!
+                    }
+                    else if (message instanceof ReadMessage) {
+                        Record rec = lh.readPrimitive(Integer.parseInt(message.getDataID()));
+                        if(rec.getID() == -1 && rec.getValue() == -1){
+                            sendMessage("file not found");
+                        } else {
+                            sendMessage("file " + message.getDataID() + " has data: " + rec.getValue());
+                        }
+                    }
                 }
                 catch(ClassNotFoundException classnot){
                     System.err.println("Data received in unknown format");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }catch (SocketException e) {
+                    System.out.println("one client disconnected");
+                    message.setDataID("bye");
                 }
-            }while(!message.getDataID().equals("bye"));
-        }
+            }while (!message.getDataID().equals("bye")) ;
+          }
         catch(IOException ioException){
             ioException.printStackTrace();
         }

@@ -10,10 +10,12 @@ import java.net.URL;
 
 public class PersistenceHandler {
     private JSONParser parser = new JSONParser();
+    private String fileName = "src\\server\\logic\\datastorage.txt" ;
+
 
     public void persist(Record record) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
-        JSONObject dataStorage = (JSONObject) parser.parse(new FileReader("C:\\Users\\aless\\Desktop\\replicated-data-storage\\src\\server\\logic\\datastorage.txt"));;
+        JSONObject dataStorage = (JSONObject) parser.parse(new FileReader(fileName));
         JSONArray dataArray = (JSONArray) dataStorage.get("Data");
         boolean alreadyPresent = false;
         for (Object o : dataArray) {
@@ -22,7 +24,7 @@ public class PersistenceHandler {
             {
                 jsonLineItem.put("VALUE", record.getValue());
                 alreadyPresent = true;
-                File newDataFile = new File("C:\\Users\\aless\\Desktop\\replicated-data-storage\\src\\server\\logic\\datastorage.txt");
+                File newDataFile = new File(fileName);
                 newDataFile.createNewFile();
                 FileWriter filewriter = new FileWriter(newDataFile);
                 filewriter.write(dataStorage.toJSONString());
@@ -37,7 +39,7 @@ public class PersistenceHandler {
             newData.put("VALUE", record.getValue());
             dataArray.add(newData);
             dataStorage.put("Data", dataArray);
-            File newDataFile = new File("C:\\Users\\aless\\Desktop\\replicated-data-storage\\src\\server\\logic\\datastorage.txt");
+            File newDataFile = new File(fileName);
             newDataFile.createNewFile();
             FileWriter filewriter = new FileWriter(newDataFile);
             filewriter.write(dataStorage.toJSONString());
