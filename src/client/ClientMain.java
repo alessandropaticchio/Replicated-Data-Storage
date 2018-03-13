@@ -21,7 +21,7 @@ public class ClientMain {
         try{
             //1. creating a socket to connect to the server
             System.out.println("Welcome");
-            requestSocket = new Socket("localhost", 2004);
+            requestSocket = new Socket("localhost", 2004);  //IP address?
             System.out.println("Connected to localhost in port 2004");
             //2. get Input and Output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
