@@ -29,7 +29,7 @@ public class ThreadedEchoServer {
             try {
                 System.out.println("Waiting for connection");
                 socket = serverSocket.accept();
-                System.out.println("Connection received from " + socket.getInetAddress().getHostName());
+                System.out.println("Connection received from " + socket.getInetAddress());
 
             } catch (IOException e) {
                 System.out.println("I/O error: " + e);

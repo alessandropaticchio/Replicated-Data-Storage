@@ -14,7 +14,7 @@ public class ClientConnection extends Thread{
     Socket connection = null;
     ObjectOutputStream out;
     ObjectInputStream in;
-    ClientMessage message;
+    ClientMessage message = new ClientMessage("0");
     private LogicHandler lh;
 
     public ClientConnection(Socket connection, LogicHandler lh) {
@@ -55,9 +55,12 @@ public class ClientConnection extends Thread{
                     System.err.println("Data received in unknown format");
                 } catch (ParseException e) {
                     e.printStackTrace();
+                }catch (SocketException e) {
+                    System.out.println("one client disconnected");
+                    message.setDataID("bye");
                 }
-            }while(!message.getDataID().equals("bye"));
-        }
+            }while (!message.getDataID().equals("bye")) ;
+          }
         catch(IOException ioException){
             ioException.printStackTrace();
         }
