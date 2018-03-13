@@ -4,6 +4,7 @@ public class WriteMessage extends ClientMessage {
 
     int value;
 
+
     public WriteMessage(String dataID, int value) {
         super(dataID);
         this.value = value;

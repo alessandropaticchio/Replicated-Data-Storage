@@ -39,7 +39,7 @@ public class ClientMain {
 
                 String choice = scanner.next();
                 switch (choice) {
-                    case  "1":
+                    case "1":
                         System.err.println("Insert the file ID: ");
                         String toSearchID = scanner.next();
                         read(toSearchID);

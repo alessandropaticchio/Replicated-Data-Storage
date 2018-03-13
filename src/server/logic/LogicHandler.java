@@ -6,8 +6,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import server.Server;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.HashMap;
 
 public class LogicHandler {
@@ -48,9 +51,19 @@ public class LogicHandler {
 
     }
 
-    public void writePrimitive(int id, int value) throws IOException, ParseException {
+    public void fromQueue(int id, int value, Socket socket) throws IOException, ParseException {
         this.volatileDataStorage.put(id,value);
         this.ph.persist(new Record(id,value));
+        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush();
+        out.writeObject("WRITE with ID: " + id + " has been executed");
+        out.flush();
     }
+
+    public void writePrimitive(int id, int value, Socket socket) throws IOException, ParseException {
+        this.server.toQueue(id, value, socket);
+        System.out.println("Write message with ID: " + id + " and VALUE: " + value + " is sent to the replicated storages");
+    }
+
 
 }

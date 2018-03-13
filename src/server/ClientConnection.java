@@ -39,7 +39,7 @@ public class ClientConnection extends Thread{
                     if (message.getDataID().equals("bye"))
                         sendMessage("bye");
                     else if (message instanceof WriteMessage) {
-                        lh.writePrimitive(Integer.parseInt(message.getDataID()), ((WriteMessage) message).getValue());
+                        lh.writePrimitive(Integer.parseInt(message.getDataID()), ((WriteMessage) message).getValue(), connection);
                         sendMessage("file wrote");
                     }
                     else if (message instanceof ReadMessage) {
