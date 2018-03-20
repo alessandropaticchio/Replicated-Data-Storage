@@ -48,11 +48,14 @@ public class InputQueue extends PriorityQueue<QueueSlot> {
 
             // Check if all the acks are arrived
             int i = 0;
-            while (members.get(slot.getAcks().get(i).getOriginAddr().toString() + ' ' + slot.getAcks().get(i).getOriginPort()
-                    + ' ' + slot.getAcks().get(i).getOriginID()) != null)
-                i += 1;
-            if (i == members.size())
-                slot.setReady(true);
+            try {
+                while (members.get(slot.getAcks().get(i).getOriginAddr().toString() + ' ' + slot.getAcks().get(i).getOriginPort()
+                        + ' ' + slot.getAcks().get(i).getOriginID()) != null)
+                    i += 1;
+            } catch(IndexOutOfBoundsException e) {
+                if (i == members.size())
+                    slot.setReady(true);
+            }
         }
     }
 
