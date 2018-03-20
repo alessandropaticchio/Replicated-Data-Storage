@@ -44,7 +44,7 @@ public class ThreadedClientServer {
         }
     }
 
-    public void sendConfirm(String msg){
+    public synchronized void sendConfirm(String msg){
         int i;
         for(i=0; i<outputs.size(); i++){
             try{
