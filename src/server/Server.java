@@ -17,6 +17,7 @@ public class Server {
     private final String groupAddr = "225.4.5.6";
     private final int port = 44500;
     private final int ID;
+    private ThreadedClientServer tes;
 
     public Server() throws UnknownHostException {
         this.ID = new Random().nextInt(65000);
@@ -36,8 +37,7 @@ public class Server {
 
         System.out.println("Address of the Server Socket for client connection: " + GetIP.getIP().toString());
 
-        ThreadedClientServer tes = new ThreadedClientServer(2004, server.getLogic());
-        tes.run();
+        server.goTes(2004, server.getLogic());
     }
 
     public MulticastHandler getMulticast() {
@@ -52,4 +52,12 @@ public class Server {
         this.multicast.send(new Write(this.ID, id, data, socket));
     }
 
+    public ThreadedClientServer getTes() {
+        return tes;
+    }
+
+    public void goTes(int port,LogicHandler lh) {
+        this.tes = new ThreadedClientServer(port, lh);
+        tes.run();
+    }
 }

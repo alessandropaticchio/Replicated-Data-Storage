@@ -16,10 +16,13 @@ public class ClientConnection extends Thread{
     ObjectInputStream in;
     ClientMessage message = new ClientMessage(0);
     private LogicHandler lh;
+    private ThreadedClientServer tes;
 
-    public ClientConnection(Socket connection, LogicHandler lh) {
+    public ClientConnection(Socket connection, LogicHandler lh, ThreadedClientServer tes) {
         this.connection = connection;
+        System.out.println(connection.toString());
         this.lh = lh;
+        this.tes = tes;
     }
 
     public void run()
@@ -31,6 +34,7 @@ public class ClientConnection extends Thread{
             in = new ObjectInputStream(connection.getInputStream());
             out.writeObject("connection successful");
             out.flush();
+            tes.setOutputs(out);
             //4. The two parts communicate via the input and output streams
             do{
                 try{
