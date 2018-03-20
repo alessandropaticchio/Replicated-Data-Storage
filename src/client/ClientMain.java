@@ -9,7 +9,8 @@ public class ClientMain {
     Socket requestSocket;
     ObjectOutputStream out;
     ObjectInputStream in;
-    String message;
+    int flag = 0;
+    ReceivingThread receivingThread;
     ClientMain(){}
 
     public static void main(String args[]) throws ClassNotFoundException {
@@ -28,13 +29,12 @@ public class ClientMain {
             //get Input and Output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             out.flush();
-            in = new ObjectInputStream(requestSocket.getInputStream());
+
+            new ReceivingThread(requestSocket).start();
 
             //Communicating with the server
             do{
 
-                message = (String)in.readObject();
-                System.out.println("Server: " + message);
                 System.out.println("1:READ, 2:WRITE, Others inputs:DISCONNECT");
 
                 String choice = scanner.next();
@@ -54,22 +54,21 @@ public class ClientMain {
                     default:
                         ClientMessage msg = new ClientMessage(-1);
                         out.writeObject(msg);
+                        flag=1;
                         System.out.println("You are disconnected");
-                        message = "bye";
                         break;
                 }
 
-            }while(!message.equals("bye"));
+            }while(flag==0);
         }
         catch(UnknownHostException unknownHost){
             System.err.println("You are trying to connect to an unknown host!");
         } catch(IOException ioException) {
-            System.out.println("NO Server");
+            System.out.println("No Server");
             this.run();
         } finally{
             //4: Closing connection
             try{
-                in.close();
                 out.close();
                 requestSocket.close();
             }
