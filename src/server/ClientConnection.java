@@ -14,7 +14,7 @@ public class ClientConnection extends Thread{
     Socket connection = null;
     ObjectOutputStream out;
     ObjectInputStream in;
-    ClientMessage message = new ClientMessage("0");
+    ClientMessage message = new ClientMessage(0);
     private LogicHandler lh;
 
     public ClientConnection(Socket connection, LogicHandler lh) {
@@ -36,14 +36,14 @@ public class ClientConnection extends Thread{
                 try{
                     message = (ClientMessage)in.readObject();
                     System.out.println("message received for file: " + message.getDataID());
-                    if (message.getDataID().equals("bye"))
+                    if (message.getDataID() == -1)
                         sendMessage("bye");
                     else if (message instanceof WriteMessage) {
-                        lh.writePrimitive(Integer.parseInt(message.getDataID()), ((WriteMessage) message).getValue(), connection);
+                        lh.writePrimitive(message.getDataID(), ((WriteMessage) message).getValue(), connection);
                         sendMessage("file wrote");
                     }
                     else if (message instanceof ReadMessage) {
-                        Record rec = lh.readPrimitive(Integer.parseInt(message.getDataID()));
+                        Record rec = lh.readPrimitive(message.getDataID());
                         if(rec.getID() == -1 && rec.getValue() == -1){
                             sendMessage("file not found");
                         } else {
@@ -57,9 +57,9 @@ public class ClientConnection extends Thread{
                     e.printStackTrace();
                 }catch (SocketException e) {
                     System.out.println("one client disconnected");
-                    message.setDataID("bye");
+                    message.setDataID(-1);
                 }
-            }while (!message.getDataID().equals("bye")) ;
+            }while (message.getDataID() != -1) ;
           }
         catch(IOException ioException){
             ioException.printStackTrace();
