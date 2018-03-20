@@ -19,11 +19,13 @@ public class LogicHandler {
     private final PersistenceHandler ph;
     private String fileName = "src\\server\\logic\\datastorage.txt" ;
     private final Server server;
+    private ThreadedClientServer tes;
 
     public LogicHandler(Server server) {
         this.volatileDataStorage = new HashMap<Integer, Integer>();
         this.ph = new PersistenceHandler();
         this.server = server;
+
     }
 
     public void fetchData() throws IOException, ParseException {
@@ -56,8 +58,8 @@ public class LogicHandler {
         this.volatileDataStorage.put(id,value);
         this.ph.persist(new Record(id,value));
 
-        ThreadedClientServer tes = server.getTes();
-        tes.sendConfirm("WRITE with ID: " + id + " has been executed by socket: ");
+        tes = server.getTes();
+        tes.sendConfirm("WRITE with ID: " + id + " has been executed");
 
     }
 
