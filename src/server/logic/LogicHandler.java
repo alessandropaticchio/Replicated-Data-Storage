@@ -55,11 +55,9 @@ public class LogicHandler {
     public void fromQueue(int id, int value) throws IOException, ParseException {
         this.volatileDataStorage.put(id,value);
         this.ph.persist(new Record(id,value));
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-        out.flush();
 
         ThreadedClientServer tes = server.getTes();
-        tes.sendConfirm("WRITE with ID: " + id + " has been executed by socket: " + socket.toString());
+        tes.sendConfirm("WRITE with ID: " + id + " has been executed by socket: ");
 
     }
 
