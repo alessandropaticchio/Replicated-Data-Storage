@@ -48,8 +48,8 @@ public class Server {
         return logic;
     }
 
-    public void toQueue(int id, int data, Socket socket) throws IOException {
-        this.multicast.send(new Write(this.ID, id, data, socket));
+    public void toQueue(int id, int data) throws IOException {
+        this.multicast.send(new Write(this.ID, id, data));
     }
 
     public ThreadedClientServer getTes() {

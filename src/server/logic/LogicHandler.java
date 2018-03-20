@@ -52,7 +52,7 @@ public class LogicHandler {
 
     }
 
-    public void fromQueue(int id, int value, Socket socket) throws IOException, ParseException {
+    public void fromQueue(int id, int value) throws IOException, ParseException {
         this.volatileDataStorage.put(id,value);
         this.ph.persist(new Record(id,value));
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
@@ -63,8 +63,8 @@ public class LogicHandler {
 
     }
 
-    public void writePrimitive(int id, int value, Socket socket) throws IOException, ParseException {
-        this.server.toQueue(id, value, socket);
+    public void writePrimitive(int id, int value) throws IOException, ParseException {
+        this.server.toQueue(id, value);
         System.out.println("Write message with ID: " + id + " and VALUE: " + value + " is sent to the replicated storages");
     }
 
