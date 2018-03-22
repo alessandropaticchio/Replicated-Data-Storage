@@ -6,11 +6,13 @@ public class Write extends Message {
 
     int file;
     int data;
+    String socketString;
 
-    public Write(int sender, int file, int data) {
+    public Write(int sender, int file, int data, String socketString) {
         super(sender);
         this.file = file;
         this.data = data;
+        this.socketString = socketString;
     }
 
     public int getFile() {
@@ -21,4 +23,7 @@ public class Write extends Message {
         return data;
     }
 
+    public String getSocketString() {
+        return socketString;
+    }
 }

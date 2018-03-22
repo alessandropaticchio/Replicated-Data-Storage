@@ -32,7 +32,7 @@ public class ClientConnection extends Thread{
             out = new ObjectOutputStream(connection.getOutputStream());
             out.flush();
             in = new ObjectInputStream(connection.getInputStream());
-            out.writeObject("connection successful");
+            out.writeObject("connection successful, your socket is: " + connection.toString());
             out.flush();
             tes.setOutputs(out);
             //4. The two parts communicate via the input and output streams
@@ -43,7 +43,7 @@ public class ClientConnection extends Thread{
                     if (message.getDataID() == -1)
                         sendMessage("bye");
                     else if (message instanceof WriteMessage) {
-                        lh.writePrimitive(message.getDataID(), ((WriteMessage) message).getValue());
+                        lh.writePrimitive(message.getDataID(), ((WriteMessage) message).getValue(), connection.toString());
                     }
                     else if (message instanceof ReadMessage) {
                         Record rec = lh.readPrimitive(message.getDataID());
@@ -72,6 +72,7 @@ public class ClientConnection extends Thread{
             try{
                 in.close();
                 out.close();
+                tes.removeOutput(out);
                 connection.close();
             }
             catch(IOException ioException){

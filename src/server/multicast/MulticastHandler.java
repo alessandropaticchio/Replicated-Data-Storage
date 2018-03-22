@@ -101,7 +101,7 @@ public class MulticastHandler implements Runnable{
                     if(this.queue.available()) {
                         QueueSlot slot = this.queue.draw();
                         Write msg = (Write)slot.getMessage();
-                        this.server.getLogic().fromQueue(msg.getFile(), msg.getData());
+                        this.server.getLogic().fromQueue(msg.getFile(), msg.getData(), msg.getSocketString());
                     }
                 } else if(readObject instanceof Join) {
                     Join message = (Join) readObject;

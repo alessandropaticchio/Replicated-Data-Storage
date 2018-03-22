@@ -50,7 +50,7 @@ public class ThreadedClientServer {
             try{
                 outputs.get(i).writeObject(msg);
                 outputs.get(i).flush();
-                System.out.println("server>" + msg);
+                //System.out.println("server>" + msg);
             }
             catch(IOException ioException){
                 ioException.printStackTrace();
@@ -60,5 +60,8 @@ public class ThreadedClientServer {
 
     public void setOutputs(ObjectOutputStream output) {
         this.outputs.add(output);
+    }
+    public void removeOutput(ObjectOutputStream output) {
+        this.outputs.remove(output);
     }
 }
