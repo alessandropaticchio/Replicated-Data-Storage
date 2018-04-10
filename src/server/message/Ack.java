@@ -26,4 +26,9 @@ public class Ack  extends Message{
     public int getOriginID() {
         return originID;
     }
+
+    public String toString() {
+        return "Addr: " + originAddr + ", Port: " + originPort + ", ID: " + originID;
+    }
+
 }

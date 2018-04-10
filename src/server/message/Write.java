@@ -26,4 +26,9 @@ public class Write extends Message {
     public String getSocketString() {
         return socketString;
     }
+
+    public String toString() {
+        return "File: " + file + ", Data:  " + data + " , Socket: " + socketString;
+    }
+
 }
