@@ -99,7 +99,8 @@ public class MulticastHandler implements Runnable{
                 //Action associated to the message type
                 if (readObject instanceof Write) {
                     Write message = (Write) readObject;
-                    this.clock = Long.max(this.clock, message.getClock()) + 1;
+                    if(!datagram.getAddress().toString().equals(GetIP.getIP().toString()))
+                        this.clock = Long.max(this.clock, message.getClock()) + 1;
                     this.queue.add(new QueueSlot(message, datagram.getAddress(), datagram.getPort()));
                     this.send(new Ack(this.ID, message.getClock(), datagram.getAddress(), datagram.getPort(), message.getSenderID()));
                 } else if(readObject instanceof Ack) {
