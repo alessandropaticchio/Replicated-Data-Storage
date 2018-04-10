@@ -10,7 +10,10 @@ import server.logic.Record;
 
 import java.io.*;
 import java.net.*;
+
+
 public class ClientConnection extends Thread{
+
     Socket connection = null;
     ObjectOutputStream out;
     ObjectInputStream in;
@@ -80,6 +83,8 @@ public class ClientConnection extends Thread{
             }
         }
     }
+
+
     void sendMessage(String msg)
     {
         try{

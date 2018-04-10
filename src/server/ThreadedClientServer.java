@@ -20,6 +20,7 @@ public class ThreadedClientServer {
     }
 
     public void run(){
+
         ServerSocket serverSocket = null;
         Socket socket = null;
 
@@ -27,8 +28,8 @@ public class ThreadedClientServer {
             serverSocket = new ServerSocket(PORT);
         } catch (IOException e) {
             e.printStackTrace();
-
         }
+
         while (true) {
             try {
                 System.out.println("Waiting for connection");
@@ -44,23 +45,23 @@ public class ThreadedClientServer {
         }
     }
 
-    public synchronized void sendConfirm(String msg){
-        int i;
-        for(i=0; i<outputs.size(); i++){
+    public void sendConfirm(String msg){
+
+        for(ObjectOutputStream o:outputs){
             try{
-                outputs.get(i).writeObject(msg);
-                outputs.get(i).flush();
-                //System.out.println("server>" + msg);
+                o.writeObject(msg);
+                o.flush();
+                System.out.println("server>" + msg);
             }
             catch(IOException ioException){
                 ioException.printStackTrace();
             }
         }
+
     }
 
-    public void setOutputs(ObjectOutputStream output) {
-        this.outputs.add(output);
-    }
+    public void setOutputs(ObjectOutputStream output) { this.outputs.add(output); }
+
     public void removeOutput(ObjectOutputStream output) {
         this.outputs.remove(output);
     }
