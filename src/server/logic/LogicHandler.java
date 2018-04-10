@@ -22,6 +22,7 @@ public class LogicHandler {
     private ThreadedClientServer tes;
 
     public LogicHandler(Server server) {
+
         this.volatileDataStorage = new HashMap<Integer, Integer>();
         this.ph = new PersistenceHandler();
         this.server = server;
@@ -29,6 +30,7 @@ public class LogicHandler {
     }
 
     public void fetchData() throws IOException, ParseException {
+
         JSONParser parser = new JSONParser();
         JSONObject dataStorage = (JSONObject) parser.parse(new FileReader(fileName));
         JSONArray dataArray = (JSONArray) dataStorage.get("Data");
@@ -41,6 +43,7 @@ public class LogicHandler {
     }
 
     public Record readPrimitive(int id){
+
         if (this.volatileDataStorage.containsKey(id)){
             Record toSend = new Record(id, volatileDataStorage.get(id));
             System.out.println("The record with ID: " + id + " has been found." +
@@ -54,7 +57,8 @@ public class LogicHandler {
 
     }
 
-    public void fromQueue(int id, int value, String socketString) throws IOException, ParseException {
+    public synchronized void fromQueue(int id, int value, String socketString) throws IOException, ParseException {
+
         this.volatileDataStorage.put(id,value);
         this.ph.persist(new Record(id,value));
 
