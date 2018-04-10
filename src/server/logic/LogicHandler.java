@@ -57,7 +57,7 @@ public class LogicHandler {
 
     }
 
-    public synchronized void fromQueue(int id, int value, String socketString) throws IOException, ParseException {
+    public void fromQueue(int id, int value, String socketString) throws IOException, ParseException {
 
         this.volatileDataStorage.put(id,value);
         this.ph.persist(new Record(id,value));

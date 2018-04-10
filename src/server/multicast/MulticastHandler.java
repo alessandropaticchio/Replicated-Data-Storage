@@ -4,6 +4,7 @@ import org.json.simple.parser.ParseException;
 import server.GetIP;
 import server.Server;
 import server.message.*;
+import server.multicast.Queue.CheckAvailable;
 import server.multicast.Queue.InputQueue;
 import server.multicast.Queue.QueueSlot;
 
@@ -11,6 +12,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.zip.CheckedInputStream;
 
 
 public class MulticastHandler implements Runnable{
@@ -28,6 +30,7 @@ public class MulticastHandler implements Runnable{
     //Queue
     HashMap<String, GroupMember> members;
     InputQueue queue;
+    CheckAvailable checker;
 
     Server server;
 
@@ -39,6 +42,7 @@ public class MulticastHandler implements Runnable{
         this.members = new HashMap<>();
         this.queue = new InputQueue();
         this.server = server;
+        this.checker = new CheckAvailable(this.server, this.queue);
     }
 
 
@@ -75,6 +79,7 @@ public class MulticastHandler implements Runnable{
     public void run() {
 
         this.connect();
+        new Thread(checker).start();
 
         //Receive data
         while (true) {
@@ -84,7 +89,7 @@ public class MulticastHandler implements Runnable{
             DatagramPacket datagram = new DatagramPacket(buffer, bufferSize);
             try {
                 s.receive(datagram);
-                //Deserialze object
+                //Deserialize object
                 ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
                 ObjectInputStream ois = null;
                 ois = new ObjectInputStream(bais);
@@ -100,11 +105,6 @@ public class MulticastHandler implements Runnable{
                 } else if(readObject instanceof Ack) {
                     Ack message = (Ack) readObject;
                     this.queue.addAck(message, (HashMap<String,GroupMember>)this.members.clone());
-                    if(this.queue.available()) {
-                        QueueSlot slot = this.queue.draw();
-                        Write msg = (Write)slot.getMessage();
-                        this.server.getLogic().fromQueue(msg.getFile(), msg.getData(), msg.getSocketString());
-                    }
                 } else if(readObject instanceof Join) {
                     Join message = (Join) readObject;
                     GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());
@@ -118,7 +118,7 @@ public class MulticastHandler implements Runnable{
                 } else {
                     System.out.println("The received object is not of type String!");
                 }
-            } catch (IOException | ClassNotFoundException | ParseException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
