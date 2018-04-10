@@ -22,10 +22,10 @@ public class ClientMain {
         try{
             Scanner scanner = new Scanner(System.in);
             //creating a socket to connect to the server
-            System.err.println("Welcome, insert the IP address of the desired server:");
+            System.out.println("Welcome, insert the IP address of the desired server:");
             String ip = scanner.next();
             requestSocket = new Socket(ip, 2004);
-            System.out.println("Connected to server: "+ ip + " in port 2004");
+            System.out.println("Connected to server: "+ ip + " at port 2004");
             //get Input and Output streams
             out = new ObjectOutputStream(requestSocket.getOutputStream());
             out.flush();
@@ -35,19 +35,19 @@ public class ClientMain {
             //Communicating with the server
             do{
 
-                System.out.println("1:READ, 2:WRITE, Others inputs:DISCONNECT");
+                System.out.println("1:READ, 2:WRITE, Other inputs:DISCONNECT");
 
                 String choice = scanner.next();
                 switch (choice) {
                     case "1":
-                        System.err.println("Insert the file ID: ");
+                        System.out.println("Insert the file ID: ");
                         String toSearchID = scanner.next();
                         read(Integer.parseInt(toSearchID));
                         break;
                     case "2" :
-                        System.err.println("Insert the file ID: ");
+                        System.out.println("Insert the file ID: ");
                         String dataId = scanner.next();
-                        System.err.println("Insert the new value: ");
+                        System.out.println("Insert the new value: ");
                         String  newValue = scanner.next();
                         write(Integer.parseInt(dataId), Integer.parseInt(newValue));
                         break;
@@ -55,7 +55,7 @@ public class ClientMain {
                         ClientMessage msg = new ClientMessage(-1);
                         out.writeObject(msg);
                         flag=1;
-                        System.out.println("You are disconnected");
+                        System.out.println("You are now disconnected");
                         break;
                 }
 
@@ -64,7 +64,7 @@ public class ClientMain {
         catch(UnknownHostException unknownHost){
             System.err.println("You are trying to connect to an unknown host!");
         } catch(IOException ioException) {
-            System.out.println("No Server");
+            System.out.println("No server found at the given IP");
             this.run();
         } finally{
             //4: Closing connection
@@ -93,7 +93,6 @@ public class ClientMain {
         try{
             out.writeObject(msg);
             out.flush();
-            System.out.println("message sent");
         }
         catch(SocketException e){
         }

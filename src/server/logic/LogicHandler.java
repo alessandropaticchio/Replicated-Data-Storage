@@ -63,13 +63,13 @@ public class LogicHandler {
         this.ph.persist(new Record(id,value));
 
         tes = server.getTes();
-        tes.sendConfirm("WRITE for file ID: " + id + ", with value: " + value + " has been executed from socket: " + socketString);
+        tes.sendConfirm("WRITE for file ID: " + id + ", with value: " + value + " has been executed by socket: " + socketString);
 
     }
 
     public void writePrimitive(int id, int value, String socketString) throws IOException, ParseException {
         this.server.toQueue(id, value, socketString);
-        System.out.println("Write message with ID: " + id + " and VALUE: " + value + " is sent to the replicated storages, from socket: " + socketString);
+        System.out.println("Write message with ID: " + id + " and VALUE: " + value + " is sent to the replicated storages by socket: " + socketString);
     }
 
 
