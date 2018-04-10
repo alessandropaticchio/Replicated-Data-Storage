@@ -28,7 +28,7 @@ public class Write extends Message {
     }
 
     public String toString() {
-        return "Clock: " + getClock() + "File: " + file + ", Data: " + data + " , Socket: " + socketString;
+        return "WRITE - CLK: " + getClock() + "ID: " + file + ", DT: " + data + " , SCK: " + socketString;
     }
 
 }

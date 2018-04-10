@@ -28,7 +28,7 @@ public class Ack  extends Message{
     }
 
     public String toString() {
-        return "Addr: " + originAddr + ", Port: " + originPort + ", ID: " + originID;
+        return "ACK - ADDR: " + originAddr + ", PRT: " + originPort + ", CLK: " + getClock();
     }
 
 }

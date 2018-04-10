@@ -32,7 +32,6 @@ public class ThreadedClientServer {
 
         while (true) {
             try {
-                System.out.println("Waiting for connection");
                 socket = serverSocket.accept();
                 System.out.println("Connection received from " + socket.getInetAddress());
 
@@ -51,7 +50,6 @@ public class ThreadedClientServer {
             try{
                 o.writeObject(msg);
                 o.flush();
-                System.out.println("server>" + msg);
             } catch(IOException ioException){
                 ioException.printStackTrace();
             }

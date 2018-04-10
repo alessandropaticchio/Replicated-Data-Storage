@@ -35,14 +35,12 @@ public class ClientConnection extends Thread{
             out = new ObjectOutputStream(connection.getOutputStream());
             out.flush();
             in = new ObjectInputStream(connection.getInputStream());
-            out.writeObject("connection successful, your socket is: " + connection.toString());
-            out.flush();
             tes.setOutputs(out);
             //4. The two parts communicate via the input and output streams
             do{
                 try{
                     message = (ClientMessage)in.readObject();
-                    System.out.println("message received for file: " + message.getDataID());
+                    System.out.println("Write occurred on file: " + message.getDataID());
                     if (message.getDataID() == -1)
                         sendMessage("bye");
                     else if (message instanceof WriteMessage) {
@@ -51,9 +49,9 @@ public class ClientConnection extends Thread{
                     else if (message instanceof ReadMessage) {
                         Record rec = lh.readPrimitive(message.getDataID());
                         if(rec.getID() == -1 && rec.getValue() == -1){
-                            sendMessage("file not found");
+                            sendMessage("No file with this ID...");
                         } else {
-                            sendMessage("file " + message.getDataID() + " has data: " + rec.getValue());
+                            sendMessage("File with ID " + message.getDataID() + " has data: " + rec.getValue());
                         }
                     }
                 }
@@ -62,7 +60,7 @@ public class ClientConnection extends Thread{
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }catch (SocketException e) {
-                    System.out.println("one client disconnected");
+                    System.out.println("Client disconnected");
                     message.setDataID(-1);
                 }
             }while (message.getDataID() != -1) ;
@@ -90,7 +88,6 @@ public class ClientConnection extends Thread{
         try{
             out.writeObject(msg);
             out.flush();
-            System.out.println("server>" + msg);
         }
         catch(IOException ioException){
             ioException.printStackTrace();
