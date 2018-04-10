@@ -90,6 +90,7 @@ public class MulticastHandler implements Runnable{
                 ois = new ObjectInputStream(bais);
                 Object readObject = ois.readObject();
                 System.out.println(readObject.toString());
+                System.out.println(datagram.getAddress());
                 //Action associated to the message type
                 if (readObject instanceof Write) {
                     Write message = (Write) readObject;

@@ -14,8 +14,6 @@ public class ReceivingThread extends Thread {
 
     public ReceivingThread(Socket requestSocket) {
         this.socket = requestSocket;
-
-
     }
 
     public void run(){
