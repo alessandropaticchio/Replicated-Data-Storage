@@ -56,7 +56,7 @@ public class MulticastHandler implements Runnable{
 
     public synchronized void send(Message msg) throws IOException {
         // Increase clock
-        if(!(msg instanceof Ack || msg instanceof Nack)) {
+        if(!(msg instanceof Ack || msg instanceof Nack || msg instanceof AckJoin)) {
             this.clock += 1;
             msg.setClock(this.clock);
         }
