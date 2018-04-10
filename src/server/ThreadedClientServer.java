@@ -27,7 +27,7 @@ public class ThreadedClientServer {
         try {
             serverSocket = new ServerSocket(PORT);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.exit(0);
         }
 
         while (true) {
