@@ -14,6 +14,7 @@ public class PersistenceHandler {
 
 
     public void persist(Record record) throws IOException, ParseException {
+
         JSONParser parser = new JSONParser();
         JSONObject dataStorage = (JSONObject) parser.parse(new FileReader(fileName));
         JSONArray dataArray = (JSONArray) dataStorage.get("Data");
