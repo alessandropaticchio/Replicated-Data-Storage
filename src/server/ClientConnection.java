@@ -3,7 +3,7 @@ package server;
 import client.ClientMessage;
 import client.ReadMessage;
 import client.WriteMessage;
-import com.oracle.tools.packager.Log;
+//import com.oracle.tools.packager.Log;
 import org.json.simple.parser.ParseException;
 import server.logic.LogicHandler;
 import server.logic.Record;
