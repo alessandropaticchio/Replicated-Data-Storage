@@ -1,1 +1,1 @@
-{"Data":[{"ID":"4","VALUE":4},{"ID":1,"VALUE":76},{"ID":2,"VALUE":345},{"ID":3,"VALUE":9879},{"ID":112,"VALUE":221},{"ID":211,"VALUE":112},{"ID":31,"VALUE":122},{"ID":122,"VALUE":11},{"ID":22,"VALUE":12}]}
+{"Data":[{"ID":"4","VALUE":4},{"ID":1,"VALUE":1},{"ID":2,"VALUE":2},{"ID":3,"VALUE":3},{"ID":112,"VALUE":221},{"ID":211,"VALUE":112},{"ID":31,"VALUE":122},{"ID":122,"VALUE":11},{"ID":22,"VALUE":12},{"ID":5,"VALUE":51},{"ID":8,"VALUE":8},{"ID":6,"VALUE":5},{"ID":7,"VALUE":8},{"ID":9,"VALUE":8}]}
