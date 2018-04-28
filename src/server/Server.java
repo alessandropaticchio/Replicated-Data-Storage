@@ -35,7 +35,7 @@ public class Server {
         Server server = new Server();
         server.start();
 
-        System.out.println("Address of the Server Socket for client connection: " + GetIP.getIP().toString());
+        System.out.println("Replicated Storage Service is on.\nThe IP of this server is: " + GetIP.getIP().toString());
 
         server.goTes(2004, server.getLogic());
     }

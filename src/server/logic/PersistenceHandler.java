@@ -31,7 +31,7 @@ public class PersistenceHandler {
                 filewriter.write(dataStorage.toJSONString());
                 filewriter.flush();
                 filewriter.close();
-                System.out.println("The record with value ID: " + record.getID() + " was already present in our data storage. It has been overwritten with VALUE: " + record.getValue() );
+                System.out.println("The record with ID " + record.getID() + " was already present in our data storage. It has been overwritten with VALUE " + record.getValue() );
             }
         }
         if (!alreadyPresent) {
@@ -46,7 +46,7 @@ public class PersistenceHandler {
             filewriter.write(dataStorage.toJSONString());
             filewriter.flush();
             filewriter.close();
-            System.out.println("The record ID: " + record.getID() + ", VALUE: " + record.getValue() + " is now persistent.");
+            System.out.println("The record with ID: " + record.getID() + ", VALUE: " + record.getValue() + " is now persistent.");
         }
     }
 

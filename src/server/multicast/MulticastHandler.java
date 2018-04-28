@@ -94,7 +94,7 @@ public class MulticastHandler implements Runnable{
                 ObjectInputStream ois = null;
                 ois = new ObjectInputStream(bais);
                 Object readObject = ois.readObject();
-                System.out.println(datagram.getAddress() + " >> " + readObject.toString());
+                System.out.println("From " + datagram.getAddress() + " >> " + readObject.toString());
                 //Action associated to the message type
                 if (readObject instanceof Write) {
                     Write message = (Write) readObject;
@@ -114,7 +114,7 @@ public class MulticastHandler implements Runnable{
                     AckJoin message = (AckJoin) readObject;
                     GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());
                     this.members.put(member.toString(), member);
-                    System.out.println(this.members);
+                    System.out.println("Servers in the Multicast Group:\n" + this.members);
                 } else {
                     System.out.println("The received object is not of type String!");
                 }

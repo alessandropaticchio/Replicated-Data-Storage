@@ -33,7 +33,7 @@ public class ThreadedClientServer {
         while (true) {
             try {
                 socket = serverSocket.accept();
-                System.out.println("Connection received from " + socket.getInetAddress());
+                System.out.println("A new client is connected with IP " + socket.getInetAddress());
 
             } catch (IOException e) {
                 System.out.println("I/O error: " + e);
@@ -46,6 +46,7 @@ public class ThreadedClientServer {
 
     public void sendConfirm(String msg){
 
+        System.out.println("Server Op: sendConfirm");
         for(ObjectOutputStream o:outputs){
             try{
                 o.writeObject(msg);
@@ -57,7 +58,10 @@ public class ThreadedClientServer {
 
     }
 
-    public void setOutputs(ObjectOutputStream output) { this.outputs.add(output); }
+    public void setOutputs(ObjectOutputStream output) {
+        this.outputs.add(output);
+        System.out.println("Number of clients connected to this server: " + outputs.size());
+    }
 
     public void removeOutput(ObjectOutputStream output) {
         this.outputs.remove(output);

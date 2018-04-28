@@ -59,6 +59,8 @@ public class LogicHandler {
 
     public void fromQueue(int id, int value, String socketString) throws IOException, ParseException {
 
+        System.out.println("Server Op: fromQueue");
+
         this.volatileDataStorage.put(id,value);
         this.ph.persist(new Record(id,value));
 
