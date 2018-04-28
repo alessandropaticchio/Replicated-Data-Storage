@@ -16,7 +16,7 @@ public class GetIP {
             while (ee.hasMoreElements())
             {
                 InetAddress i = (InetAddress) ee.nextElement();
-                if(i.getHostAddress().contains("192.168.1"))
+                if(i.getHostAddress().contains("192.168.43"))
                     return i;
             }
         }
