@@ -31,6 +31,7 @@ public class Server {
         this.logic.fetchData();
     }
 
+
     public static void main(String[] args) throws IOException, ParseException {
         Server server = new Server();
         server.start();
@@ -49,7 +50,9 @@ public class Server {
     }
 
     public void toQueue(int id, int data, String socketString) throws IOException {
-        this.multicast.send(new Write(this.ID, id, data, socketString));
+        Write toSend = new Write(this.ID, id, data, socketString);
+        this.multicast.send(toSend);
+
     }
 
     public ThreadedClientServer getTes() {

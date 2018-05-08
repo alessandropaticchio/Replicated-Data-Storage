@@ -12,7 +12,6 @@ public class PersistenceHandler {
     private JSONParser parser = new JSONParser();
     private String fileName = "src\\server\\logic\\datastorage.txt" ;
 
-
     public void persist(Record record) throws IOException, ParseException {
 
         JSONParser parser = new JSONParser();
