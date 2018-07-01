@@ -11,8 +11,12 @@ import server.multicast.Queue.QueueSlot;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.CheckedInputStream;
 
 
@@ -31,8 +35,6 @@ public class MulticastHandler implements Runnable{
     //Queue
     HashMap<String, GroupMember> members;
     InputQueue queue;
-    CheckAvailable checker;
-
     Server server;
 
     public MulticastHandler(String groupAddress, int port, int ID, Server server) throws UnknownHostException {
@@ -41,9 +43,8 @@ public class MulticastHandler implements Runnable{
         this.clock = 0;
         this.ID = ID;
         this.members = new HashMap<>();
-        this.queue = new InputQueue();
+        this.queue = new InputQueue(server);
         this.server = server;
-        this.checker = new CheckAvailable(this.server, this.queue);
     }
 
 
@@ -76,19 +77,10 @@ public class MulticastHandler implements Runnable{
         s.send(new DatagramPacket(data, data.length, group, port));
     }
 
-    public HashMap<String, GroupMember> getMembers() {
-        return members;
-    }
-
-    public InputQueue getQueue() {
-        return queue;
-    }
-
     @Override
     public void run() {
 
         this.connect();
-        new Thread(checker).start();
 
         //Receive data
         while (true) {
@@ -134,7 +126,6 @@ public class MulticastHandler implements Runnable{
                 e.printStackTrace();
             }
         }
-
 
     }
 }

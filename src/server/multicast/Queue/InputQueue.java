@@ -1,13 +1,17 @@
 package server.multicast.Queue;
 
+import server.Server;
 import server.message.Ack;
 import server.multicast.GroupMember;
+import server.multicast.MulticastHandler;
 
 import java.util.*;
 
 public class InputQueue extends PriorityQueue<QueueSlot> {
 
-    public InputQueue() {
+    private Server server;
+
+    public InputQueue(Server server) {
         // Sorting element according to the timestamp and/or ID
         super(new Comparator<QueueSlot>() {
             @Override
@@ -25,6 +29,7 @@ public class InputQueue extends PriorityQueue<QueueSlot> {
                     return o1.getMessage().getClock() < o2.getMessage().getClock() ? -1 : 1;
             }
         });
+        this.server = server;
     }
 
     public void addSlot(QueueSlot slot) {
@@ -55,6 +60,11 @@ public class InputQueue extends PriorityQueue<QueueSlot> {
             } catch(IndexOutOfBoundsException e) {
                 if (i == members.size())
                     slot.setReady(true);
+            } finally {
+                while(this.available()) {
+                    QueueSlot drawnSlot = this.draw();
+                    this.server.getLogic().fromQueue(drawnSlot.getMessage());
+                }
             }
         }
     }

@@ -6,6 +6,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import server.Server;
 import server.ThreadedClientServer;
+import server.message.Message;
+import server.message.Write;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,6 +15,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class LogicHandler {
     private HashMap<Integer,Integer> volatileDataStorage;
@@ -20,12 +24,14 @@ public class LogicHandler {
     private String fileName = "src\\server\\logic\\datastorage.txt" ;
     private final Server server;
     private ThreadedClientServer tes;
+    private Lock queueAccessLock;
 
     public LogicHandler(Server server) {
 
         this.volatileDataStorage = new HashMap<Integer, Integer>();
         this.ph = new PersistenceHandler();
         this.server = server;
+        this.queueAccessLock = new ReentrantLock();
 
     }
 
@@ -57,20 +63,29 @@ public class LogicHandler {
 
     }
 
-    public void fromQueue(int id, int value, String socketString) throws IOException, ParseException {
+    public synchronized void fromQueue(Message msg) throws IOException, ParseException {
 
-        System.out.println("Server Op: fromQueue");
+        if(msg instanceof Write){
+            Write msgWrite = (Write)msg;
+            System.out.println("Server Op: fromQueue");
 
-        this.volatileDataStorage.put(id,value);
-        this.ph.persist(new Record(id,value));
+            this.volatileDataStorage.put(msgWrite.getFile(), msgWrite.getData());
+            this.ph.persist(new Record(msgWrite.getFile(), msgWrite.getData()));
 
-        tes = server.getTes();
-        tes.sendConfirm("WRITE for file ID: " + id + ", with value: " + value + " has been executed by socket: " + socketString);
+            tes = server.getTes();
+            tes.sendConfirm("WRITE for file ID: " + msgWrite.getFile() + ", with value: " + msgWrite.getData() + " has been executed by socket: " + msgWrite.getSocketString());
+        }
 
     }
 
-    public void writePrimitive(int id, int value, String socketString) throws IOException, ParseException {
-        this.server.toQueue(id, value, socketString);
+    public synchronized void writePrimitive(int id, int value, String socketString) {
+        try {
+            this.server.toQueue(id, value, socketString);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+
+        }
         System.out.println("Write message with ID: " + id + " and VALUE: " + value + " is sent to the replicated storages by socket: " + socketString);
     }
 
