@@ -3,7 +3,7 @@ package server.multicast;
 import org.json.simple.parser.ParseException;
 import server.GetIP;
 import server.Server;
-import server.TimeoutThread;
+//import server.TimeoutThread;
 import server.message.*;
 import server.multicast.Queue.CheckAvailable;
 import server.multicast.Queue.InputQueue;
@@ -77,6 +77,10 @@ public class MulticastHandler implements Runnable{
         s.send(new DatagramPacket(data, data.length, group, port));
     }
 
+    public synchronized void resend(QueueSlot slot, ArrayList<GroupMember> missed) {
+
+    }
+
     @Override
     public void run() {
 
@@ -103,8 +107,8 @@ public class MulticastHandler implements Runnable{
                         this.clock = Long.max(this.clock, message.getClock()) + 1;
                     QueueSlot newQueueSlot = new QueueSlot(message, datagram.getAddress(), datagram.getPort());
                     this.queue.add(newQueueSlot);
-                    TimeoutThread timeoutThread = new TimeoutThread(newQueueSlot,this);
-                    timeoutThread.start();
+                    //TimeoutThread timeoutThread = new TimeoutThread(newQueueSlot,this);
+                    //timeoutThread.start();
                     this.send(new Ack(this.ID, message.getClock(), datagram.getAddress(), datagram.getPort(), message.getSenderID()));
                 } else if(readObject instanceof Ack) {
                     Ack message = (Ack) readObject;

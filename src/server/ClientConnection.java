@@ -7,6 +7,7 @@ import client.WriteMessage;
 import org.json.simple.parser.ParseException;
 import server.logic.LogicHandler;
 import server.logic.Record;
+import server.logic.BufferSlot;
 
 import java.io.*;
 import java.net.*;
@@ -43,17 +44,17 @@ public class ClientConnection extends Thread{
                     System.out.println("Write occurred on file: " + message.getDataID());
                     if (message.getDataID() == -1)
                         sendMessage("bye");
-                    else if (message instanceof WriteMessage) {
-                        lh.writePrimitive(message.getDataID(), ((WriteMessage) message).getValue(), connection.toString());
+                    else {
+                        lh.addToBuffer(new BufferSlot(message, out, connection));
                     }
-                    else if (message instanceof ReadMessage) {
+                    /*else if (message instanceof ReadMessage) {
                         Record rec = lh.readPrimitive(message.getDataID());
                         if(rec.getID() == -1 && rec.getValue() == -1){
                             sendMessage("No file with this ID...");
                         } else {
                             sendMessage("File with ID " + message.getDataID() + " has data: " + rec.getValue());
                         }
-                    }
+                    }*/
                 }
                 catch(ClassNotFoundException classnot){
                     System.err.println("Data received in unknown format");

@@ -24,14 +24,14 @@ public class LogicHandler {
     private String fileName = "src\\server\\logic\\datastorage.txt" ;
     private final Server server;
     private ThreadedClientServer tes;
-    private Lock queueAccessLock;
+    private Buffer buffer;
 
     public LogicHandler(Server server) {
 
         this.volatileDataStorage = new HashMap<Integer, Integer>();
         this.ph = new PersistenceHandler();
         this.server = server;
-        this.queueAccessLock = new ReentrantLock();
+        this.buffer = new Buffer();
 
     }
 
@@ -48,7 +48,7 @@ public class LogicHandler {
         }
     }
 
-    public Record readPrimitive(int id){
+    public synchronized Record readPrimitive(int id){
 
         if (this.volatileDataStorage.containsKey(id)){
             Record toSend = new Record(id, volatileDataStorage.get(id));
@@ -75,7 +75,6 @@ public class LogicHandler {
             tes = server.getTes();
             tes.sendConfirm("WRITE for file ID: " + msgWrite.getFile() + ", with value: " + msgWrite.getData() + " has been executed by socket: " + msgWrite.getSocketString());
         }
-
     }
 
     public synchronized void writePrimitive(int id, int value, String socketString) {

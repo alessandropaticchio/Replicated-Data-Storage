@@ -32,11 +32,11 @@ public class InputQueue extends PriorityQueue<QueueSlot> {
         this.server = server;
     }
 
-    public void addSlot(QueueSlot slot) {
+    public synchronized void addSlot(QueueSlot slot) {
         this.add(slot);
     }
 
-    public void addAck(Ack ack, HashMap<String, GroupMember> members) {
+    public synchronized void addAck(Ack ack, HashMap<String, GroupMember> members) {
         // Search the correct slot to which add the ack
         Iterator<QueueSlot> slots = this.iterator();
         QueueSlot slot = null;
