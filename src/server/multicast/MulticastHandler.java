@@ -3,21 +3,13 @@ package server.multicast;
 import org.json.simple.parser.ParseException;
 import server.GetIP;
 import server.Server;
-//import server.TimeoutThread;
 import server.message.*;
-import server.multicast.Queue.CheckAvailable;
-import server.multicast.Queue.InputQueue;
-import server.multicast.Queue.QueueSlot;
+import server.queue.QueueSlot;
 
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.CheckedInputStream;
 
 
 public class MulticastHandler implements Runnable{
@@ -32,9 +24,8 @@ public class MulticastHandler implements Runnable{
     MulticastSocket s;
     private final int bufferSize = 1024 * 4; //Maximum size of transfer object
 
-    //Queue
+    //queue
     HashMap<String, GroupMember> members;
-    InputQueue queue;
     Server server;
 
     public MulticastHandler(String groupAddress, int port, int ID, Server server) throws UnknownHostException {
@@ -43,10 +34,10 @@ public class MulticastHandler implements Runnable{
         this.clock = 0;
         this.ID = ID;
         this.members = new HashMap<>();
-        this.queue = new InputQueue(server);
         this.server = server;
     }
 
+    public HashMap<String, GroupMember> getMembers() { return members; }
 
     public void connect() {
         try {
@@ -60,7 +51,7 @@ public class MulticastHandler implements Runnable{
         }
     }
 
-    public synchronized void send(Message msg) throws IOException {
+    public void send(Message msg) throws IOException {
         // Increase clock
         if(msg instanceof Write || msg instanceof Join) {
             this.clock += 1;
@@ -77,8 +68,8 @@ public class MulticastHandler implements Runnable{
         s.send(new DatagramPacket(data, data.length, group, port));
     }
 
-    public synchronized void resend(QueueSlot slot, ArrayList<GroupMember> missed) {
-
+    public void resend(QueueSlot slot, ArrayList<GroupMember> missed) {
+        //TODO
     }
 
     @Override
@@ -106,13 +97,12 @@ public class MulticastHandler implements Runnable{
                     if(!datagram.getAddress().toString().equals(GetIP.getIP().toString()))
                         this.clock = Long.max(this.clock, message.getClock()) + 1;
                     QueueSlot newQueueSlot = new QueueSlot(message, datagram.getAddress(), datagram.getPort());
-                    this.queue.add(newQueueSlot);
-                    //TimeoutThread timeoutThread = new TimeoutThread(newQueueSlot,this);
-                    //timeoutThread.start();
+                    this.server.getQueue().addSlot(newQueueSlot);
                     this.send(new Ack(this.ID, message.getClock(), datagram.getAddress(), datagram.getPort(), message.getSenderID()));
+                    // TODO Timeout retransmission of ACKS
                 } else if(readObject instanceof Ack) {
                     Ack message = (Ack) readObject;
-                    this.queue.addAck(message, (HashMap<String,GroupMember>)this.members.clone());
+                    this.server.getQueue().addAck(message, (HashMap<String,GroupMember>)this.members.clone());
                 } else if(readObject instanceof Join) {
                     Join message = (Join) readObject;
                     GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());
@@ -126,10 +116,10 @@ public class MulticastHandler implements Runnable{
                 } else {
                     System.out.println("The received object is not of type String!");
                 }
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException | ParseException e) {
                 e.printStackTrace();
             }
-        }
 
+        }
     }
 }

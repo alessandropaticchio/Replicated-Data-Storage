@@ -1,4 +1,4 @@
-package server.multicast.Queue;
+package server.queue;
 
 import server.message.Ack;
 import server.message.Message;

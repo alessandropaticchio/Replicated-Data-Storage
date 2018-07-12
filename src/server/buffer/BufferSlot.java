@@ -1,6 +1,10 @@
-package server.logic;
+package server.buffer;
 
 import client.ClientMessage;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 public class BufferSlot {
 
@@ -14,9 +18,9 @@ public class BufferSlot {
     this.connection = connection;
   }
 
-  public ClientMessage getMessage() { return this.message }
-  public ObjectOutputStream getOut() { return this.out }
-  public Socket getConnection() { return this.connection }
+  public ClientMessage getMessage() { return this.message; }
+  public ObjectOutputStream getOut() { return this.out; }
+  public Socket getConnection() { return this.connection; }
 
   public void reply(String string)
   {

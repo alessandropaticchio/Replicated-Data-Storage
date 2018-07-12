@@ -11,12 +11,12 @@ import java.util.ArrayList;
 public class ThreadedClientServer {
 
     private static int PORT;
-    private static LogicHandler lh;
+    private static Server server;
     private ArrayList<ObjectOutputStream> outputs = new ArrayList<ObjectOutputStream>();
 
-    public ThreadedClientServer(int PORT, LogicHandler lh) {
+    public ThreadedClientServer(int PORT, Server server) {
         this.PORT = PORT;
-        this.lh = lh;
+        this.server = server;
     }
 
     public void run(){
@@ -39,7 +39,7 @@ public class ThreadedClientServer {
                 System.out.println("I/O error: " + e);
             }
             // new thread for a client
-            ClientConnection c = new ClientConnection(socket, lh, this);
+            ClientConnection c = new ClientConnection(socket, server);
             c.start();
         }
     }

@@ -1,13 +1,10 @@
 package server;
 
 import client.ClientMessage;
-import client.ReadMessage;
-import client.WriteMessage;
 //import com.oracle.tools.packager.Log;
 import org.json.simple.parser.ParseException;
 import server.logic.LogicHandler;
-import server.logic.Record;
-import server.logic.BufferSlot;
+import server.buffer.BufferSlot;
 
 import java.io.*;
 import java.net.*;
@@ -19,14 +16,12 @@ public class ClientConnection extends Thread{
     ObjectOutputStream out;
     ObjectInputStream in;
     ClientMessage message = new ClientMessage(0);
-    private LogicHandler lh;
-    private ThreadedClientServer tes;
+    private Server server;
 
-    public ClientConnection(Socket connection, LogicHandler lh, ThreadedClientServer tes) {
+    public ClientConnection(Socket connection, Server server) {
         this.connection = connection;
         System.out.println(connection.toString());
-        this.lh = lh;
-        this.tes = tes;
+        this.server = server;
     }
 
     public void run()
@@ -36,7 +31,7 @@ public class ClientConnection extends Thread{
             out = new ObjectOutputStream(connection.getOutputStream());
             out.flush();
             in = new ObjectInputStream(connection.getInputStream());
-            tes.setOutputs(out);
+            server.getTes().setOutputs(out);
             //4. The two parts communicate via the input and output streams
             do{
                 try{
@@ -45,7 +40,7 @@ public class ClientConnection extends Thread{
                     if (message.getDataID() == -1)
                         sendMessage("bye");
                     else {
-                        lh.addToBuffer(new BufferSlot(message, out, connection));
+                        server.getBuffer().addToBuffer(new BufferSlot(message, out, connection));
                     }
                     /*else if (message instanceof ReadMessage) {
                         Record rec = lh.readPrimitive(message.getDataID());
@@ -58,9 +53,7 @@ public class ClientConnection extends Thread{
                 }
                 catch(ClassNotFoundException classnot){
                     System.err.println("Data received in unknown format");
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }catch (SocketException e) {
+                } catch (SocketException e) {
                     System.out.println("Client disconnected");
                     message.setDataID(-1);
                 }
@@ -74,7 +67,7 @@ public class ClientConnection extends Thread{
             try{
                 in.close();
                 out.close();
-                tes.removeOutput(out);
+                server.getTes().removeOutput(out);
                 connection.close();
             }
             catch(IOException ioException){

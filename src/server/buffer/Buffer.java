@@ -1,19 +1,23 @@
-package server.logic;
+package server.buffer;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
+
+import client.ClientMessage;
 import client.WriteMessage;
 import client.ReadMessage;
-import server.logic.BufferSlot;
+import server.Server;
 import server.logic.Record;
+import server.message.Write;
 
 public class Buffer extends ArrayDeque<BufferSlot> {
 
-  private LogicHandler lh;
+  private Server server;
   private int writeCount = 0;
 
-  public Buffer(LogicHandler lh) {
+  public Buffer(Server server) {
     super();
-    this.lh = lh;
+    this.server = server;
   }
 
   public synchronized void addToBuffer(BufferSlot slot) {
@@ -32,18 +36,17 @@ public class Buffer extends ArrayDeque<BufferSlot> {
       if(temp.getMessage() instanceof WriteMessage) {
         writeCount++;
         temp = this.poll();
-        lh.writePrimitive(temp.getMessage().getDataID(), ((WriteMessage) temp.getMessage()).getValue(), temp.getConnection() .toString());
-      } else if(temp.getMessage() instanceof ReaMessage) {
+        try {
+          this.server.getMulticast().send(new Write(this.server.getID(), temp.getMessage().getDataID(), ((WriteMessage)temp.getMessage()).getValue(), temp.getConnection().toString()));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      } else if(temp.getMessage() instanceof ReadMessage) {
         if(writeCount > 0)
           break;
         else {
           temp = this.poll();
-          Record rec = lh.readPrimitive(temp.getMessage().getDataID());
-          if(rec.getID() == -1 && rec.getValue() == -1){
-              temp.reply("No file with this ID...");
-          } else {
-              temp.reply("File with ID " + message.getDataID() + " has data: " + rec.getValue());
-          }
+          this.server.getLogic().read(temp);
         }
       }
     }

@@ -1,10 +1,11 @@
-package server.multicast.Queue;
+package server.queue;
 
+import org.json.simple.parser.ParseException;
 import server.Server;
 import server.message.Ack;
 import server.multicast.GroupMember;
-import server.multicast.MulticastHandler;
 
+import java.io.IOException;
 import java.util.*;
 
 public class InputQueue extends PriorityQueue<QueueSlot> {
@@ -36,7 +37,7 @@ public class InputQueue extends PriorityQueue<QueueSlot> {
         this.add(slot);
     }
 
-    public synchronized void addAck(Ack ack, HashMap<String, GroupMember> members) {
+    public synchronized void addAck(Ack ack, HashMap<String, GroupMember> members) throws IOException, ParseException {
         // Search the correct slot to which add the ack
         Iterator<QueueSlot> slots = this.iterator();
         QueueSlot slot = null;
@@ -63,7 +64,7 @@ public class InputQueue extends PriorityQueue<QueueSlot> {
             } finally {
                 while(this.available()) {
                     QueueSlot drawnSlot = this.draw();
-                    this.server.getLogic().fromQueue(drawnSlot.getMessage());
+                    this.server.getLogic().write(drawnSlot);
                 }
             }
         }
