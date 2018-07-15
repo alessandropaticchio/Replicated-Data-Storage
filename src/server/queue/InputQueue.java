@@ -33,8 +33,9 @@ public class InputQueue extends PriorityQueue<QueueSlot> {
         this.server = server;
     }
 
-    public synchronized void addSlot(QueueSlot slot) {
+    public synchronized void addSlot(QueueSlot slot) throws IOException {
         this.add(slot);
+        this.server.getMulticast().send(new Ack(this.server.getMulticast().getID(), slot.getMessage().getClock(), slot.getAddress(), slot.getPort(), slot.getMessage().getSenderID()));
     }
 
     public synchronized void addAck(Ack ack, HashMap<String, GroupMember> members) throws IOException, ParseException {

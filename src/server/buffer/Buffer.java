@@ -9,15 +9,18 @@ import client.ReadMessage;
 import server.Server;
 import server.logic.Record;
 import server.message.Write;
+import server.multicast.SequenceNumber;
 
 public class Buffer extends ArrayDeque<BufferSlot> {
 
   private Server server;
   private int writeCount = 0;
+  private SequenceNumber sn;
 
   public Buffer(Server server) {
     super();
     this.server = server;
+    this.sn = new SequenceNumber();
   }
 
   public synchronized void addToBuffer(BufferSlot slot) {
@@ -37,7 +40,8 @@ public class Buffer extends ArrayDeque<BufferSlot> {
         writeCount++;
         temp = this.poll();
         try {
-          this.server.getMulticast().send(new Write(this.server.getID(), temp.getMessage().getDataID(), ((WriteMessage)temp.getMessage()).getValue(), temp.getConnection().toString()));
+          this.server.getMulticast().send(new Write(this.server.getID(), temp.getMessage().getDataID(), ((WriteMessage)temp.getMessage()).getValue(), this.sn.getSequenceNumber(), temp.getConnection().toString()));
+          this.sn.incrementSequenceNumber();
         } catch (IOException e) {
           e.printStackTrace();
         }
