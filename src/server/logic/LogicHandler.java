@@ -56,7 +56,7 @@ public class LogicHandler {
 
     public void read(BufferSlot slot){
 
-        Integer id = slot.getMessage().getDataID();
+        int id = slot.getMessage().getDataID();
 
         rwl.readLock().lock();
         if (this.volatileDataStorage.containsKey(id)){

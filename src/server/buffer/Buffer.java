@@ -34,25 +34,26 @@ public class Buffer extends ArrayDeque<BufferSlot> {
   }
 
   private void trigger() {
-    BufferSlot temp = this.peek();
+    BufferSlot temp = this.poll();
     while(temp != null) {
       if(temp.getMessage() instanceof WriteMessage) {
         writeCount++;
-        temp = this.poll();
         try {
           this.server.getMulticast().send(new Write(this.server.getID(), temp.getMessage().getDataID(), ((WriteMessage)temp.getMessage()).getValue(), this.sn.getSequenceNumber(), temp.getConnection().toString()));
           this.sn.incrementSequenceNumber();
         } catch (IOException e) {
           e.printStackTrace();
         }
-      } else if(temp.getMessage() instanceof ReadMessage) {
+      } else {
         if(writeCount > 0)
           break;
         else {
-          temp = this.poll();
+          System.out.println(this.size());
+          System.out.println(temp);
           this.server.getLogic().read(temp);
         }
       }
+      temp = this.poll();
     }
   }
 
