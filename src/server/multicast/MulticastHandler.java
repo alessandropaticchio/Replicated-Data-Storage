@@ -110,7 +110,6 @@ public class MulticastHandler implements Runnable{
                         this.clock = Long.max(this.clock, message.getClock()) + 1;
                     QueueSlot newQueueSlot = new QueueSlot(message, datagram.getAddress(), datagram.getPort());
                     this.server.getQueue().addSlot(newQueueSlot);
-                    // TODO Timeout retransmission of ACKS
                 } else if(readObject instanceof Ack) {
                     Ack message = (Ack) readObject;
                     this.server.getQueue().addAck(message, (HashMap<String,GroupMember>)this.members.clone());
@@ -122,11 +121,10 @@ public class MulticastHandler implements Runnable{
                 } else if(readObject instanceof AckJoin) {
                     AckJoin message = (AckJoin) readObject;
                     GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());
-                    System.out.println(this.members.get(member.toString()));
-                    if(this.members.get(member.toString()) != null) {
+                    if(this.members.get(member.toString()) == null)
                         this.members.put(member.toString(), member);
-                        System.out.println("Servers in the Multicast Group:\n" + this.members);
-                    }
+                    System.out.println("Servers in the Multicast Group:\n" + this.members);
+
                 } else {
                     System.out.println("The received object is not of type String!");
                 }
