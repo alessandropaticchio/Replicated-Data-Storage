@@ -1,4 +1,7 @@
-package server;
+package server.retransmission;
+
+import server.retransmission.ServerConnection;
+import server.Server;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -37,7 +40,7 @@ public class ThreadedServerServer {
                 System.out.println("I/O error: " + e);
             }
             // new thread for a client
-            ClientConnection c = new ClientConnection(socket, server);
+            ServerConnection c = new ServerConnection(socket, server);
             c.start();
         }
     }

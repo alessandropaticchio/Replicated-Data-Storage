@@ -5,6 +5,7 @@ import server.buffer.Buffer;
 import server.logic.LogicHandler;
 import server.multicast.MulticastHandler;
 import server.queue.InputQueue;
+import server.retransmission.ThreadedServerServer;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -44,6 +45,7 @@ public class Server {
         System.out.println("Replicated Storage Service is on.\nThe IP of this server is: " + GetIP.getIP().toString());
 
         server.goTcs(2004);
+        server.goTss(2005);
     }
 
     public void goTcs(int port) {

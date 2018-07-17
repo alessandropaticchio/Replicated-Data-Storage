@@ -1,17 +1,17 @@
-package server;
+package server.retransmission;
 
 import client.ClientMessage;
 import client.ReadMessage;
+import org.json.simple.parser.ParseException;
+import server.Server;
 import server.buffer.BufferSlot;
+import server.queue.QueueSlot;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-
-//import com.oracle.tools.packager.Log;
-
 
 public class ServerConnection extends Thread{
 
@@ -36,13 +36,14 @@ public class ServerConnection extends Thread{
             in = new ObjectInputStream(connection.getInputStream());
             server.getTcs().setOutputs(out);
             //4. The two parts communicate via the input and output streams
-            do{
-                in.readObject();
-            }while (message.getDataID() != -1) ;
+            QueueSlot slot = (QueueSlot) in.readObject();
+            this.server.getQueue().retransmission(slot);
           }
         catch(IOException ioException){
             ioException.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         } finally{
             //4: Closing connection

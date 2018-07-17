@@ -1,9 +1,14 @@
 package server.queue;
 
+import org.json.simple.parser.ParseException;
 import server.message.Ack;
 import server.multicast.GroupMember;
 import server.multicast.MulticastHandler;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -31,6 +36,32 @@ public class CheckAcks implements Runnable {
         return found;
     }
 
+    private void sendRetransmission(QueueSlot queueSlot, InetAddress ip){
+
+        ObjectOutputStream out = null;
+        Socket requestSocket = null;
+        try {
+            requestSocket = new Socket(ip, 2005);
+            System.out.println("You are now connected to the Server: "+ ip + " at port " + 2005);
+            //get Input and Output streams
+
+            out = new ObjectOutputStream(requestSocket.getOutputStream());
+            out.writeObject(queueSlot);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                out.close();
+                requestSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
     @Override
     public void run() {
 
@@ -38,9 +69,8 @@ public class CheckAcks implements Runnable {
             ArrayList<GroupMember> missed = new ArrayList<>();
             for(GroupMember g : this.mh.getMembers().values()) {
                 if(!findAck(g, queueSlot.getAcks()))
-                    missed.add(g);
+                    sendRetransmission(queueSlot, g.getAddress());
             }
-            this.mh.resend(queueSlot, missed);
         }
 
     }

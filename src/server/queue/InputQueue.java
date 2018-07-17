@@ -71,6 +71,28 @@ public class InputQueue extends PriorityQueue<QueueSlot> {
         }
     }
 
+    public void retransmission(QueueSlot rSlot) throws IOException, ParseException {
+
+        Iterator<QueueSlot> slots = this.iterator();
+        QueueSlot slot = null;
+        boolean found = false;
+        while(slots.hasNext() && !found) {
+            slot = slots.next();
+            if(slot.getAddress().equals(rSlot.getAddress()) && slot.getPort() == rSlot.getPort()
+                    && slot.getMessage().getSenderID() == rSlot.getMessage().getSenderID() && slot.getMessage().getClock() == rSlot.getMessage().getClock())
+                found = true;
+        }
+        if(found) {
+            this.server.getMulticast().send(new Ack(this.server.getMulticast().getID(), slot.getMessage().getClock(), slot.getAddress(), slot.getPort(), slot.getMessage().getSenderID()));
+            HashMap<String, GroupMember> members = this.server.getMulticast().getMembers();
+            for(Ack a : rSlot.getAcks())
+                this.addAck(a, members);
+        } else {
+            this.addSlot(rSlot);
+        }
+
+    }
+
     public boolean available() {
         // Is the header ready to be processed?
         if(this.peek() != null)
