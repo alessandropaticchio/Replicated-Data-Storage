@@ -43,6 +43,7 @@ public class CheckAcks implements Runnable {
         try {
             requestSocket = new Socket(ip, 2005);
             System.out.println("You are now connected to the Server: "+ ip + " at port " + 2005);
+            System.out.println("RETRANSMISSION\n\n");
             //get Input and Output streams
 
             out = new ObjectOutputStream(requestSocket.getOutputStream());

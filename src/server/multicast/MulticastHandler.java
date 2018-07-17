@@ -4,12 +4,15 @@ import org.json.simple.parser.ParseException;
 import server.GetIP;
 import server.Server;
 import server.message.*;
+import server.queue.CheckAcks;
 import server.queue.QueueSlot;
 
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 public class MulticastHandler implements Runnable{
@@ -27,6 +30,7 @@ public class MulticastHandler implements Runnable{
     //queue
     HashMap<String, GroupMember> members;
     Server server;
+    ScheduledThreadPoolExecutor executor;
 
     public MulticastHandler(String groupAddress, int port, int ID, Server server) throws UnknownHostException {
         this.group = InetAddress.getByName(groupAddress);
@@ -35,6 +39,7 @@ public class MulticastHandler implements Runnable{
         this.ID = ID;
         this.members = new HashMap<>();
         this.server = server;
+        this.executor = new ScheduledThreadPoolExecutor(1000);
     }
 
     public int getPort() { return port; }
@@ -110,6 +115,7 @@ public class MulticastHandler implements Runnable{
                         this.clock = Long.max(this.clock, message.getClock()) + 1;
                     QueueSlot newQueueSlot = new QueueSlot(message, datagram.getAddress(), datagram.getPort());
                     this.server.getQueue().addSlot(newQueueSlot);
+                    executor.schedule(new CheckAcks(this, newQueueSlot, this.server.getQueue()), 5, TimeUnit.MILLISECONDS);
                 } else if(readObject instanceof Ack) {
                     Ack message = (Ack) readObject;
                     this.server.getQueue().addAck(message, (HashMap<String,GroupMember>)this.members.clone());

@@ -47,7 +47,7 @@ public class ClientAuto {
 
                 //Communicating with the server
                 for (int i = 0; i < 20; i++) {
-                    Thread.sleep(50);
+                    Thread.sleep(1);
                     int id = rnd.nextInt(5);
                     int value = rnd.nextInt(50);
                     if (Math.random() < 0.5) {
