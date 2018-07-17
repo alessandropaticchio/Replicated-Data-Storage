@@ -6,21 +6,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import server.GetIP;
 import server.Server;
-import server.ThreadedClientServer;
 import server.buffer.BufferSlot;
-import server.message.Message;
 import server.message.Write;
 import server.queue.QueueSlot;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.HashMap;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LogicHandler {
@@ -82,7 +75,7 @@ public class LogicHandler {
         this.ph.persist(new Record(msgWrite.getFile(), msgWrite.getData()));
         rwl.writeLock().unlock();
 
-        this.server.getTes().sendConfirm("WRITE for file ID: " + msgWrite.getFile() + ", with value: " + msgWrite.getData() + " has been executed by socket: " + msgWrite.getSocketString());
+        this.server.getTcs().sendConfirm("WRITE for file ID: " + msgWrite.getFile() + ", with value: " + msgWrite.getData() + " has been executed by socket: " + msgWrite.getSocketString());
         System.out.println("Write message with ID: " + msgWrite.getFile() + " and VALUE: " + msgWrite.getData() + " is sent to the replicated storages by socket: " + msgWrite.getSocketString());
 
         if(slot.getAddress().toString().equals(GetIP.getIP().toString()))

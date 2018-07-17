@@ -3,10 +3,11 @@ package server.queue;
 import server.message.Ack;
 import server.message.Message;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-public class QueueSlot {
+public class QueueSlot implements Serializable {
 
     private boolean ready;
     private Message message;

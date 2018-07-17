@@ -1,15 +1,19 @@
 package server;
 
 import client.ClientMessage;
-//import com.oracle.tools.packager.Log;
 import client.ReadMessage;
 import server.buffer.BufferSlot;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.SocketException;
+
+//import com.oracle.tools.packager.Log;
 
 
-public class ClientConnection extends Thread{
+public class ServerConnection extends Thread{
 
     Socket connection = null;
     ObjectOutputStream out;
@@ -17,7 +21,7 @@ public class ClientConnection extends Thread{
     ClientMessage message = new ClientMessage(0);
     private Server server;
 
-    public ClientConnection(Socket connection, Server server) {
+    public ServerConnection(Socket connection, Server server) {
         this.connection = connection;
         System.out.println(connection.toString());
         this.server = server;
@@ -33,30 +37,14 @@ public class ClientConnection extends Thread{
             server.getTcs().setOutputs(out);
             //4. The two parts communicate via the input and output streams
             do{
-                try{
-                    message = (ClientMessage)in.readObject();
-                    if (message instanceof ReadMessage)
-                        System.out.println("Read request for file: " + message.getDataID());
-                    else
-                        System.out.println("Write request for file: " + message.getDataID());
-                    if (message.getDataID() == -1)
-                        sendMessage("bye");
-                    else {
-                        server.getBuffer().addToBuffer(new BufferSlot(message, out, connection));
-                    }
-                }
-                catch(ClassNotFoundException classnot){
-                    System.err.println("Data received in unknown format");
-                } catch (SocketException e) {
-                    System.out.println("Client disconnected");
-                    message.setDataID(-1);
-                }
+                in.readObject();
             }while (message.getDataID() != -1) ;
           }
         catch(IOException ioException){
             ioException.printStackTrace();
-        }
-        finally{
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally{
             //4: Closing connection
             try{
                 in.close();
