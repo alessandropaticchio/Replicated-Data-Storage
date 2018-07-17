@@ -2,8 +2,7 @@ package server;
 
 import client.ClientMessage;
 //import com.oracle.tools.packager.Log;
-import org.json.simple.parser.ParseException;
-import server.logic.LogicHandler;
+import client.ReadMessage;
 import server.buffer.BufferSlot;
 
 import java.io.*;
@@ -31,25 +30,20 @@ public class ClientConnection extends Thread{
             out = new ObjectOutputStream(connection.getOutputStream());
             out.flush();
             in = new ObjectInputStream(connection.getInputStream());
-            server.getTes().setOutputs(out);
+            server.getTcs().setOutputs(out);
             //4. The two parts communicate via the input and output streams
             do{
                 try{
                     message = (ClientMessage)in.readObject();
-                    System.out.println("Write occurred on file: " + message.getDataID());
+                    if(message instanceof ReadMessage)
+                        System.out.println("Read request on file: " + message.getDataID());
+                    else
+                        System.out.println("Write request on file: " + message.getDataID());
                     if (message.getDataID() == -1)
                         sendMessage("bye");
                     else {
                         server.getBuffer().addToBuffer(new BufferSlot(message, out, connection));
                     }
-                    /*else if (message instanceof ReadMessage) {
-                        Record rec = lh.readPrimitive(message.getDataID());
-                        if(rec.getID() == -1 && rec.getValue() == -1){
-                            sendMessage("No file with this ID...");
-                        } else {
-                            sendMessage("File with ID " + message.getDataID() + " has data: " + rec.getValue());
-                        }
-                    }*/
                 }
                 catch(ClassNotFoundException classnot){
                     System.err.println("Data received in unknown format");
@@ -67,7 +61,7 @@ public class ClientConnection extends Thread{
             try{
                 in.close();
                 out.close();
-                server.getTes().removeOutput(out);
+                server.getTcs().removeOutput(out);
                 connection.close();
             }
             catch(IOException ioException){

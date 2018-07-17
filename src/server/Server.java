@@ -3,7 +3,6 @@ package server;
 import org.json.simple.parser.ParseException;
 import server.buffer.Buffer;
 import server.logic.LogicHandler;
-import server.message.Write;
 import server.multicast.MulticastHandler;
 import server.queue.InputQueue;
 
@@ -15,7 +14,7 @@ public class Server {
 
     private final MulticastHandler multicast;
     private final LogicHandler logic;
-    private ThreadedClientServer tes;
+    private ThreadedClientServer tcs;
     private Buffer buffer;
     private InputQueue queue;
     private final String groupAddr = "225.4.5.6";
@@ -43,12 +42,12 @@ public class Server {
 
         System.out.println("Replicated Storage Service is on.\nThe IP of this server is: " + GetIP.getIP().toString());
 
-        server.goTes(2004, server.getLogic());
+        server.goTcs(2004);
     }
 
-    public void goTes(int port,LogicHandler lh) {
-        this.tes = new ThreadedClientServer(port, this);
-        tes.run();
+    public void goTcs(int port) {
+        this.tcs = new ThreadedClientServer(port, this);
+        tcs.run();
     }
 
     public MulticastHandler getMulticast() {
@@ -69,8 +68,8 @@ public class Server {
 
     public int getID() { return ID; }
 
-    public ThreadedClientServer getTes() {
-        return tes;
+    public ThreadedClientServer getTcs() {
+        return tcs;
     }
 
 
