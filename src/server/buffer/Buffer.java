@@ -45,8 +45,10 @@ public class Buffer extends ArrayDeque<BufferSlot> {
           e.printStackTrace();
         }
       } else {
-        if(writeCount > 0)
+        if (writeCount > 0) {
+          this.addFirst(temp);
           break;
+        }
         else {
           System.out.println(this.size());
           System.out.println(temp);

@@ -122,9 +122,11 @@ public class MulticastHandler implements Runnable{
                 } else if(readObject instanceof AckJoin) {
                     AckJoin message = (AckJoin) readObject;
                     GroupMember member = new GroupMember(datagram.getAddress(), datagram.getPort(), message.getSenderID());
-                    if(this.members.get(member.toString()) != null)
+                    System.out.println(this.members.get(member.toString()));
+                    if(this.members.get(member.toString()) != null) {
                         this.members.put(member.toString(), member);
-                    System.out.println("Servers in the Multicast Group:\n" + this.members);
+                        System.out.println("Servers in the Multicast Group:\n" + this.members);
+                    }
                 } else {
                     System.out.println("The received object is not of type String!");
                 }
